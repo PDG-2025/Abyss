@@ -1,0 +1,23 @@
+name: Hello CI
+
+on:
+  push:
+    branches: [ "feature/workflows" ]   # déclenché à chaque push sur main
+  pull_request:            # et quand on ouvre une PR vers main
+
+jobs:
+  hello:
+    runs-on: ubuntu-latest # machine virtuelle fournie par GitHub (Linux)
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        # Récupère ton code dans la VM
+
+      - name: Say hello
+        run: |
+          echo "👋 Coucou depuis GitHub Actions !"
+          echo "Répertoire actuel : $(pwd)"
+          echo "Fichiers présents :"
+          ls -la
+
