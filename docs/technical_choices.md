@@ -18,6 +18,8 @@ Nous avons choisi d’utiliser un Raspberry Pi Zero 2 W comme cœur de notre ord
 
 - Compacité : son petit format permet une intégration facile dans un boîtier étanche à fixer sur le poignet du plongeur.
 
+Nous la programmation du Raspberry Pi, nous utiliserons Python car il existe des librairies relativement facile à utiliser pour communiquer avec les capteurs via I2C.
+
 ## Capteur de pression (profondeur)
 
 Nous avons retenu un capteur barométrique haute précision MS5837.
