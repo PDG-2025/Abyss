@@ -8,6 +8,7 @@ on:
 
 env:
   NODE_VERSION: 'lts/*'
+  W_DIRECTORY: './tests/mobile_workflow'
 
 jobs:
   test:
@@ -23,12 +24,19 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Install dependencies
+        working-directory: ${{ env.W_DIRECTORY }}
         run: npm ci
 
+      - name: Ensure test-results directory exists
+        working-directory: ${{ env.W_DIRECTORY }}
+        run: mkdir -p test-results
+
       - name: Lint
+        working-directory: ${{ env.W_DIRECTORY }}
         run: npm run lint
 
       - name: Run unit tests
+        working-directory: ${{ env.W_DIRECTORY }}
         run: npm test -- --ci --reporter=default
 
       - name: Publish test report
@@ -36,6 +44,6 @@ jobs:
         uses: dorny/test-reporter@v1
         with:
           name: Jest Tests
-          path: test-results/junit.xml
+          path: ${{ env.W_DIRECTORY }}/test-results/junit.xml
           reporter: jest-junit
 
