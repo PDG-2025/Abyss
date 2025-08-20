@@ -1,0 +1,62 @@
+@startuml
+!theme plain
+
+actor User as U
+participant "Abyss Dive Computer" as ADC
+participant "Local Storage (Computer)" as LSC
+participant "Mobile App" as MA
+participant "Local Storage (Mobile)" as LSM
+participant "REST API" as API
+participant "Cloud Database" as CDB
+participant "Image Storage" as IS
+
+== Phase 1: Pendant la plongée ==
+U -> ADC : Start dive
+ADC -> LSC : Store real-time measurements
+ADC -> LSC : Calculate and store NDL/Deco
+ADC -> LSC : Log alerts with severity/timestamp
+ADC -> LSC : Record compass data
+ADC -> U : Display real-time data & alerts
+
+note over ADC, LSC : Stockage local autonome pendant la plongée
+
+== Phase 2: Après la plongée (en surface) ==
+U -> ADC : End dive
+ADC -> LSC : Calculate final dive stats
+ADC -> LSC : Generate dive summary
+
+== Phase 3: Synchronisation Bluetooth ==
+U -> MA : Open mobile app
+MA -> ADC : Establish Bluetooth connection
+MA -> ADC : Request dive data
+ADC -> MA : Transfer complete dive data via Bluetooth
+note right : Dive + Measurements + Alerts + Stats + Compass + Equipment + Weather
+MA -> LSM : Store received data locally
+MA -> U : Display dive summary
+
+== Phase 4: Enrichissement mobile ==
+U -> MA : Add dive images
+MA -> LSM : Store image metadata
+U -> MA : Add location details
+U -> MA : Add notes and buddy info
+MA -> LSM : Update dive record
+
+== Phase 5: Synchronisation cloud ==
+MA -> API : Sync complete dive data
+API -> CDB : Store dive + all related data
+MA -> IS : Upload dive images
+IS -> API : Return image URLs
+API -> CDB : Link images to dive record
+API -> MA : Confirm successful sync
+MA -> U : Show sync confirmation
+
+== Phase 6: Consultation historique ==
+U -> MA : View dive history
+MA -> API : Request user dive history
+API -> CDB : Query complete dive data
+CDB -> API : Return enriched dive logs
+API -> MA : Send dive history with images
+
+note over MA, CDB : Données disponibles sur tous les appareils connectés
+
+@enduml
