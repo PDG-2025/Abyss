@@ -1,0 +1,41 @@
+name: Mobile App CI/CD
+
+on:
+  push:
+    branches: [ feature/workflows ]
+  pull_request:
+    branches: [ feature/workflows ]
+
+env:
+  NODE_VERSION: 'lts/*'
+
+jobs:
+  test:
+    name: Test & Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Run unit tests
+        run: npm test -- --ci --reporter=default
+
+      - name: Publish test report
+        if: always()
+        uses: dorny/test-reporter@v1
+        with:
+          name: Jest Tests
+          path: test-results/junit.xml
+          reporter: jest-junit
+
