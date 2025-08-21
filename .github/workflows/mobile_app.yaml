@@ -28,23 +28,10 @@ jobs:
         working-directory: ${{ env.W_DIRECTORY }}
         run: npm ci
 
-      - name: Ensure test-results directory exists
-        working-directory: ${{ env.W_DIRECTORY }}
-        run: mkdir -p test-results
-
       - name: Lint
         working-directory: ${{ env.W_DIRECTORY }}
         run: npm run lint
 
       - name: Run unit tests
         working-directory: ${{ env.W_DIRECTORY }}
-        run: npm test -- --ci --reporter=default
-
-      - name: Publish test report
-        if: always()
-        uses: dorny/test-reporter@v1
-        with:
-          name: Jest Tests
-          path: ${{ env.W_DIRECTORY }}/test-results/junit.xml
-          reporter: jest-junit
-
+        run: npm test
