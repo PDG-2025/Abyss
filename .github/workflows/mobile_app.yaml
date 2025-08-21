@@ -8,7 +8,7 @@ on:
 
 env:
   NODE_VERSION: 'lts/*'
-  W_DIRECTORY: './tests/mobile_workflow'
+  W_DIRECTORY: './tests/workflow_mobile'
 
 jobs:
   test:
