@@ -41,7 +41,7 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '17'
-   	  cache: gradle
+          cache: gradle
 
       - name: Make gradlew executable
         working-directory: ${{ env.W_DIRECTORY }}
