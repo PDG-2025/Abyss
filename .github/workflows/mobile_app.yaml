@@ -36,7 +36,7 @@ jobs:
         working-directory: ${{ env.W_DIRECTORY }}
         run: npm test
         
-android:
+  android-build:
     name: Build Android Debug
     runs-on: ubuntu-latest
     needs: test
