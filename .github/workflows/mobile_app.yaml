@@ -66,7 +66,7 @@ jobs:
       - name: Create Android project structure
         working-directory: ${{ env.W_DIRECTORY }}
         run: |
-          npx react-native@latest init TempApp --skip-install
+    	  npx @react-native-community/cli init TempApp --skip-install
           rm -rf android
           mv TempApp/android .
           rm -rf TempApp
