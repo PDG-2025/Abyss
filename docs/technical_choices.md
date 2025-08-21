@@ -126,7 +126,7 @@ L'ordinateur Abyss fonctionne de manière totalement autonome :
 ## Phase 2 : Calcul des statistiques finales
 À la fin de la plongée, l'ordinateur :
 
-- Calcule les statistiques complètes (profondeur moyenne, consommation d'air, etc.)
+- Calcule les statistiques complètes (profondeur moyenne, etc.)
 - Génère le résumé de plongée avec tous les événements
 - Prépare les données pour la synchronisation
 

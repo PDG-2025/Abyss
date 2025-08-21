@@ -46,12 +46,12 @@ L'ordinateur affiche plusieurs widgets d'information pendant la plongée :
 - Température : 13.4°C
 - Profondeur maximale : 66m
 - Durée de plongée : 00:26
-- Pression restante dans le détendeur : 50 bars 
+- Pression restante dans la bouteille : 50 bars 
 ![alt text](./mockup/computer/Group%209.png "Title")
 
 **Paliers de décompression** :
 - Graphique des paliers à faire
-- Pression restante dans le détendeur : 50 bars 
+- Pression restante dans la bouteille : 50 bars 
 - Temps restant au palier actuel : 5min
 - Paliers restants : 6m→3m
 - Temps total jusqu'à la surface : 00:15
@@ -68,11 +68,11 @@ L'ordinateur affiche plusieurs widgets d'information pendant la plongée :
   ![alt text](./mockup/computer/Group%205.png "Title")
 
 ### Page disponnible avant la plongée
-**Gaz actif** : 
-- EAN32 (MOD 33m)
-- EAN50 (MOD 21m)
-- Trimix 18/45 (MOD 57m)
-  ![alt text](./mockup/computer/Group%204.png "Title")
+**Sélection du gaz** : 
+- MOD 21m calculer en fonction du gaz choisi
+- Air (21% O²)
+- Nitrox avec le choix du pourcentage d'O²
+  ![alt text](./mockup/computer/Group%2010.png "Title")
 
 **Statuts système** :
 - Batterie : 28%
@@ -86,7 +86,6 @@ L'ordinateur affiche plusieurs widgets d'information pendant la plongée :
 
 **Prochaine plongée** :
 - Gaz : AIR 21% (Sec: EAN50)
-- Gradient Factor : 30/85
 - Mode : Auto
 - Alarmes : Vitesse / MOD
 - Compas : calibré
