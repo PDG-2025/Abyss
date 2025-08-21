@@ -64,12 +64,12 @@ jobs:
         run: npm ci
 
       - name: Create Android project structure
-        working-directory: ${{ env.W_DIRECTORY }}
-        run: 
-    	  npx @react-native-community/cli init TempApp --skip-install
-          rm -rf android
-          mv TempApp/android .
-          rm -rf TempApp
+	working-directory: ${{ env.W_DIRECTORY }}
+	run: |
+	  npx @react-native-community/cli init TempApp --skip-install
+	  rm -rf android
+	  mv TempApp/android .
+	  rm -rf TempApp
           
       - name: Make gradlew executable
         working-directory: ${{ env.W_DIRECTORY }}
