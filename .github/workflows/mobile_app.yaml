@@ -12,7 +12,7 @@ env:
 
 jobs:
   test:
-    name: Test & Lint - Build Android Debug
+    name: Test & Lint
     runs-on: ubuntu-latest
 
     steps:
@@ -60,18 +60,36 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          gradle-version: 'wrapper'
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
 
-      - name: Build APK with Gradle
+      - name: Create local.properties
         working-directory: ${{ env.W_DIRECTORY }}
-        run: gradle build
+        run: |
+          mkdir -p android
+          echo "sdk.dir=$ANDROID_HOME" > android/local.properties
+
+      - name: Generate Android project (if needed)
+        working-directory: ${{ env.W_DIRECTORY }}
+        run: |
+          # Vérifier si le dossier android existe déjà
+          if [ ! -d "android" ]; then
+            npx react-native init TempApp
+            cp -r TempApp/android ./
+            rm -rf TempApp
+          fi
+
+      - name: Make gradlew executable
+        working-directory: ${{ env.W_DIRECTORY }}/android
+        run: chmod +x gradlew
+
+      - name: Build APK
+        working-directory: ${{ env.W_DIRECTORY }}/android
+        run: ./gradlew assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: android-apk
-          path: ${{ env.W_DIRECTORY }}/android/app/build/outputs/apk/debug/*.apk
+          path: ${{ env.W_DIRECTORY }}/android/app/build/outputs/apk/debug/app-debug.apk
           retention-days: 7
