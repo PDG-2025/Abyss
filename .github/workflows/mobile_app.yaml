@@ -59,33 +59,15 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '17'
-
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Create local.properties
-        working-directory: ${{ env.W_DIRECTORY }}
-        run: |
-          mkdir -p android
-          echo "sdk.dir=$ANDROID_HOME" > android/local.properties
-
-      - name: Generate Android project (if needed)
-        working-directory: ${{ env.W_DIRECTORY }}
-        run: |
-          # Vérifier si le dossier android existe déjà
-          if [ ! -d "android" ]; then
-            npx react-native init TempApp
-            cp -r TempApp/android ./
-            rm -rf TempApp
-          fi
+          cache: gradle
 
       - name: Make gradlew executable
-        working-directory: ${{ env.W_DIRECTORY }}/android
+        working-directory: ${{ env.W_DIRECTORY }}
         run: chmod +x gradlew
 
       - name: Build APK
-        working-directory: ${{ env.W_DIRECTORY }}/android
-        run: ./gradlew assembleDebug
+        working-directory: ${{ env.W_DIRECTORY }}
+        run: ./gradlew build
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
