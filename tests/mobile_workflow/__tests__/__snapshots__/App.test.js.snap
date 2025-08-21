@@ -1,0 +1,116 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`App Component app component matches snapshot 1`] = `
+<RCTSafeAreaView
+  style={
+    {
+      "backgroundColor": "#ffffff",
+      "flex": 1,
+    }
+  }
+>
+  <RCTScrollView
+    contentInsetAdjustmentBehavior="automatic"
+    style={
+      {
+        "backgroundColor": "#ffffff",
+        "flex": 1,
+      }
+    }
+  >
+    <View>
+      <View
+        style={
+          {
+            "alignItems": "center",
+            "flex": 1,
+            "justifyContent": "center",
+            "minHeight": 600,
+            "padding": 20,
+          }
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "fontSize": 32,
+                "fontWeight": "700",
+                "marginBottom": 16,
+                "textAlign": "center",
+              },
+              {
+                "color": "#000000",
+              },
+            ]
+          }
+          testID="welcome-text"
+        >
+          Hello World!
+        </Text>
+        <Text
+          style={
+            [
+              {
+                "fontSize": 24,
+                "fontWeight": "400",
+                "marginBottom": 32,
+                "textAlign": "center",
+              },
+              {
+                "color": "#000000",
+              },
+            ]
+          }
+          testID="subtitle-text"
+        >
+          Welcome to React Native
+        </Text>
+        <View
+          style={
+            {
+              "marginTop": 40,
+              "paddingHorizontal": 20,
+            }
+          }
+        >
+          <Text
+            style={
+              [
+                {
+                  "fontSize": 16,
+                  "lineHeight": 24,
+                  "marginBottom": 12,
+                  "textAlign": "center",
+                },
+                {
+                  "color": "#000000",
+                },
+              ]
+            }
+          >
+            This is a simple React Native app with automated testing.
+          </Text>
+          <Text
+            style={
+              [
+                {
+                  "fontSize": 16,
+                  "lineHeight": 24,
+                  "marginBottom": 12,
+                  "textAlign": "center",
+                },
+                {
+                  "color": "#000000",
+                },
+              ]
+            }
+          >
+            Built for CI/CD with GitHub Actions.
+          </Text>
+        </View>
+      </View>
+    </View>
+  </RCTScrollView>
+</RCTSafeAreaView>
+`;
