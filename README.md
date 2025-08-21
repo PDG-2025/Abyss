@@ -58,7 +58,7 @@
 
 #### 6. Extension (optionnel / avancé)
 
-* **Air Integration** : recevoir la pression de la bouteille depuis un émetteur sans fil et afficher l’air restant / autonomie.
+* **Air Integration**: recevoir la pression de la bouteille depuis un émetteur sans fil et afficher l’air restant / autonomie.
 
 ---
 
