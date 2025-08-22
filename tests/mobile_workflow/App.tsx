@@ -6,6 +6,8 @@ import {
   View,
 } from 'react-native';
 
+// Comment for tese
+
 function App(): React.JSX.Element {
   return (
     <SafeAreaView style={styles.container}>
