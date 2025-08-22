@@ -6,7 +6,7 @@ import {
   View,
 } from 'react-native';
 
-// Comment for tese
+// Comment for test
 
 function App(): React.JSX.Element {
   return (

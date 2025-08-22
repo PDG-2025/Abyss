@@ -1,4 +1,4 @@
-# Ignore for Android App demo
+# Ignore for Android App tests
 tests/mobile_workflow/android/app/build/
 tests/mobile_workflow/android/.gradle/
 tests/mobile_workflow/android/build/
@@ -7,3 +7,13 @@ tests/mobile_workflow/android/app/fastlane/
 tests/mobile_workflow/ios/
 tests/mobile_workflow/node_modules/
 tests/mobile_workflow/.bundle/
+
+# Ignore for Adroid app
+app/android/app/build/
+app/android/.gradle/
+app/android/build/
+app/android/local.properties
+app/android/app/fastlane/
+app/ios/
+app/node_modules/
+app/.bundle/

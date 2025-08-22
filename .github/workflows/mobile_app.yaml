@@ -73,5 +73,5 @@ jobs:
           username: abyss@sc2qina3877.universe.wf
           password: ${{ secrets.FTP_PASSWORD }}
           port: 21
-          local-dir: ${{ env.W_DIRECTORY }}/android/app/build/outputs/apk/release/
-          server-dir: /mobile-apps/
+          local-dir: ${{ env.W_DIRECTORY }}/android/app/build/outputs/apk/release/app-release.apk
+          server-dir: /mobile-apps/app-release.apk
