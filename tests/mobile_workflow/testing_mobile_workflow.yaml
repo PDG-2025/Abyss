@@ -1,10 +1,10 @@
 name: Testing Mobile Workflow
 
 on:
-#  push:
-#    branches: [ feature/workflows ]
-#  pull_request:
-#    branches: [ feature/workflows ]
+  push:
+    branches: [ feature/workflows ]
+  pull_request:
+    branches: [ feature/workflows ]
 
 env:
   NODE_VERSION: 'lts/*'
