@@ -37,7 +37,7 @@ jobs:
         run: npm test
         
   android-build:
-    name: Build Android Debug
+    name: Android App Build and Deploy
     runs-on: ubuntu-latest
     needs: test
 
@@ -54,9 +54,18 @@ jobs:
         working-directory: ${{ env.W_DIRECTORY }}
         run: npm ci
         
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+      - name: Build the app
+        working-directory: ${{ env.W_DIRECTORY }}
+	run: npm run android    
         
-      - name: Build with Gradle
-        working-directory: ${{ env.W_DIRECTORY }}/android
-        run: gradle build
+      - name: Deploy App on FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ftp.sc2qina3877.universe.wf
+          username: abyss@sc2qina3877.universe.wf
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 21
+          
+        
+        
+        
