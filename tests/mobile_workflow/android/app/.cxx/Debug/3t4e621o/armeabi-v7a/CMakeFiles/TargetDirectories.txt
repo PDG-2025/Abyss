@@ -1,0 +1,6 @@
+/home/arno/HEIG-VD/Annee_2.1/E/PDG/Abyss/tests/mobile_workflow/android/app/.cxx/Debug/3t4e621o/armeabi-v7a/CMakeFiles/appmodules.dir
+/home/arno/HEIG-VD/Annee_2.1/E/PDG/Abyss/tests/mobile_workflow/android/app/.cxx/Debug/3t4e621o/armeabi-v7a/CMakeFiles/edit_cache.dir
+/home/arno/HEIG-VD/Annee_2.1/E/PDG/Abyss/tests/mobile_workflow/android/app/.cxx/Debug/3t4e621o/armeabi-v7a/CMakeFiles/rebuild_cache.dir
+/home/arno/HEIG-VD/Annee_2.1/E/PDG/Abyss/tests/mobile_workflow/android/app/.cxx/Debug/3t4e621o/armeabi-v7a/safeareacontext_autolinked_build/CMakeFiles/react_codegen_safeareacontext.dir
+/home/arno/HEIG-VD/Annee_2.1/E/PDG/Abyss/tests/mobile_workflow/android/app/.cxx/Debug/3t4e621o/armeabi-v7a/safeareacontext_autolinked_build/CMakeFiles/edit_cache.dir
+/home/arno/HEIG-VD/Annee_2.1/E/PDG/Abyss/tests/mobile_workflow/android/app/.cxx/Debug/3t4e621o/armeabi-v7a/safeareacontext_autolinked_build/CMakeFiles/rebuild_cache.dir
