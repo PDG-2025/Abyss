@@ -1,2 +1,9 @@
-android/app/build/
-ios/build/
+# Ignore for Android App demo
+tests/mobile_workflow/android/app/build/
+tests/mobile_workflow/android/.gradle/
+tests/mobile_workflow/android/build/
+tests/mobile_workflow/android/local.properties
+tests/mobile_workflow/android/app/fastlane/
+tests/mobile_workflow/ios/
+tests/mobile_workflow/node_modules/
+tests/mobile_workflow/.bundle/

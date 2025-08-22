@@ -8,7 +8,7 @@ on:
 
 env:
   NODE_VERSION: 'lts/*'
-  W_DIRECTORY: './tests/workflow_mobile'
+  W_DIRECTORY: './tests/mobile_workflow'
 
 jobs:
   test:
@@ -50,22 +50,28 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: Install dependencies
         working-directory: ${{ env.W_DIRECTORY }}
         run: npm ci
         
-      - name: Build the app
+      - name: Build Android APK
         working-directory: ${{ env.W_DIRECTORY }}
-	run: npm run android    
-        
-      - name: Deploy App on FTP
+        run: |
+          cd android
+          ./gradlew assembleRelease
+          
+      - name: Deploy APK to FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ftp.sc2qina3877.universe.wf
           username: abyss@sc2qina3877.universe.wf
           password: ${{ secrets.FTP_PASSWORD }}
           port: 21
-          
-        
-        
-        
+          local-dir: ${{ env.W_DIRECTORY }}/android/app/build/outputs/apk/release/
+          server-dir: /mobile-apps/

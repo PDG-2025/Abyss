@@ -1,11 +1,3 @@
 module.exports = {
-  presets: ['module:metro-react-native-babel-preset'],
-  env: {
-    test: {
-      presets: [
-        ['@babel/preset-env', {targets: {node: 'current'}}],
-        'module:metro-react-native-babel-preset',
-      ],
-    },
-  },
+  presets: ['module:@react-native/babel-preset'],
 };
