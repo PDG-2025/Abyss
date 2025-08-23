@@ -64,7 +64,7 @@ jobs:
       - name: Prepare Build and Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install build wheels
+          pip install build wheel
           mkdir deployment-package
           cd deployment-package
           pip download -d wheels/ \
