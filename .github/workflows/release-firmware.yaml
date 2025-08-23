@@ -70,7 +70,7 @@ jobs:
             --platform linux_armv7l \
             --platform linux_aarch64 \
             --only-binary=:all: \
-            -r ../requirements.txt
+            -r requirements.txt
       
       - name: Build and Package
         run: |
