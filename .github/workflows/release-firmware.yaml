@@ -2,10 +2,10 @@ name: Release Firmware
 
 on:
   push:
-    branches: [ main, feature/workflow]
+    branches: [ main, feature/workflows]
     paths: ["firmware/**"]
   pull_request:
-    branches: [ main, feature/workflow]
+    branches: [ main, feature/workflows]
     paths: ["firmware/**"]
 
 env:
