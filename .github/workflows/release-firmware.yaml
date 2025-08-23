@@ -79,9 +79,10 @@ jobs:
         run: |
           python -m build
           cp dist/*.whl deployment-package/
+          ls
           cp template_install.sh deployment-package/install.sh
-          chmod +x install.sh
-          mkdir release && tar -czf release/Abyss-firmware.tar.gz deployment-package
+          chmod +x deployment-package/install.sh
+          mkdir release && tar -czf release/Abyss-firmware.tar.gz deployment-package/
       
       - name: Deploy to Server
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
