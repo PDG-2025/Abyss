@@ -1,19 +1,45 @@
-# Ignore for Android App tests
-tests/mobile_workflow/android/app/build/
-tests/mobile_workflow/android/.gradle/
-tests/mobile_workflow/android/build/
-tests/mobile_workflow/android/local.properties
-tests/mobile_workflow/android/app/fastlane/
-tests/mobile_workflow/ios/
-tests/mobile_workflow/node_modules/
-tests/mobile_workflow/.bundle/
+# Ignore for IDEs files
+.vscode/
+.idea/
+*.swp
+*.swo
 
-# Ignore for Adroid app
-app/android/app/build/
-app/android/.gradle/
-app/android/build/
-app/android/local.properties
-app/android/app/fastlane/
-app/ios/
-app/node_modules/
-app/.bundle/
+# Ignore for app
+android/app/build/
+android/.gradle/
+android/build/
+android/local.properties
+android/app/fastlane/
+ios/
+node_modules/
+.bundle/
+
+# Ignore for firmware (Python)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+# Python distribution 
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
