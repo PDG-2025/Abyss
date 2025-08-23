@@ -1,6 +1,6 @@
 import time
 
-# Dummy comment to test workflow 1
+# Dummy comment to test workflow
 
 def hello_world():
     return "Hello World !"
