@@ -1,2 +1,0 @@
-Mini-app basée sur la template de [`@react-native-community/cli`](https://github.com/react-native-community/cli).  
-Elle a permis de créer la template pour les workflows Github Actions de l'application mobile. 
