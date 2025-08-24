@@ -66,7 +66,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install build wheel
-          mkdir deployment-package
           pip download -d deployment-package/wheels/ \
             --platform linux_armv7l \
             --platform linux_aarch64 \
@@ -77,7 +76,6 @@ jobs:
         run: |
           python -m build
           cp dist/*.whl deployment-package/
-          cp template_install.sh deployment-package/install.sh
           chmod +x deployment-package/install.sh
           mkdir release && tar -czf release/Abyss-firmware.tar.gz deployment-package/
       
