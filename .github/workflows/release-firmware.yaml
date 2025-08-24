@@ -2,10 +2,7 @@ name: Release Firmware
 
 on:
   push:
-    branches: [ main, feature/workflows]
-    paths: ["firmware/**"]
-  pull_request:
-    branches: [ main, feature/workflows]
+    branches: [ main, feature/**]
     paths: ["firmware/**"]
 
 env:
@@ -51,6 +48,7 @@ jobs:
     name: Build and Deploy the App
     runs-on: ubuntu-latest
     needs: tests
+    if: github.ref == 'refs/heads/main'
     defaults:
       run:
         working-directory: ${{ env.W_DIRECTORY }}
@@ -79,7 +77,6 @@ jobs:
         run: |
           python -m build
           cp dist/*.whl deployment-package/
-          ls
           cp template_install.sh deployment-package/install.sh
           chmod +x deployment-package/install.sh
           mkdir release && tar -czf release/Abyss-firmware.tar.gz deployment-package/
