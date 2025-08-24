@@ -3,7 +3,7 @@ name: Release Mobile App
 on:
   push:
     branches: [ main, feature/** ]
-    path: ['app/**']
+    paths: ['app/**']
 
 env:
   NODE_VERSION: 'lts/*'
