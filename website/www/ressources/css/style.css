@@ -1,0 +1,78 @@
+.hero-gradient {
+    background: linear-gradient(135deg, #006994 0%, #00b4d8 100%);
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.device-3d {
+    transform-style: preserve-3d;
+    transform: perspective(1000px) rotateY(-15deg) rotateX(10deg);
+    box-shadow: 20px 20px 50px rgba(0, 0, 0, 0.2);
+}
+
+.wave-shape {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+    
+}
+
+.wave-shape svg {
+    position: relative;
+    display: block;
+    width: calc(100% + 1.3px);
+    height: 150px;
+    transform: scaleY(-1);
+
+}
+
+.wave-shape .shape-fill {
+    fill: #FFFFFF;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.animate-pulse-slow {
+    animation: pulse 3s infinite;
+}
+ .mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .mobile-menu.open {
+            max-height: 500px;
+        }
+        
+        .hamburger {
+            transition: all 0.3s ease;
+        }
+        
+        .hamburger.open .top-line {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+        
+        .hamburger.open .middle-line {
+            opacity: 0;
+        }
+        
+        .hamburger.open .bottom-line {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
