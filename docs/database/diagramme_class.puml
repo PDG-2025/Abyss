@@ -1,0 +1,176 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam classFontSize 12
+skinparam classAttributeFontSize 11
+skinparam classMethodFontSize 11
+
+class User {
++user_id : int
++name : string
++email : string
++password_hash : string
++register()
++login()
++getDevices() : Device[]
++getDives() : Dive[]
++getSurfaceIntervals() : SurfaceInterval[]
+}
+
+class Device {
++device_id : int
++user_id : int
++serial_number : string
++model : string
++firmware_version : string
++syncData() : void
++updateFirmware(version:string) : void
++getLastBatteryStatus() : BatteryStatus
++getDives() : Dive[]
+}
+
+class BatteryStatus {
++battery_id : int
++device_id : int
++percentage : int
++status_date : datetime
+}
+
+class Location {
++location_id : int
++name : string
++latitude : decimal(9,6)
++longitude : decimal(9,6)
++water_type : string
++certification_required : string
+}
+
+class Gas {
++gas_id : int
++name : string
++oxygen : float
++nitrogen : float
++helium : float
++validateComposition() : boolean
+}
+
+class Dive {
++dive_id : int
++user_id : int
++device_id : int
++location_id : int
++gas_id : int
++buddy_name : string
++dive_purpose : string
++entry_type : string
++certification_level : string
++visibility_underwater : float
++notes : text
++date : datetime
++duration : int
++depth_max : float
++average_depth : float
++ndl_limit : int
++addMeasurement(m:Measurement) : void
++addAlert(a:Alert) : void
++addDecompressionStop(s:DecompressionStop) : void
++getMeasurements() : Measurement[]
++getCompassTrack() : Compass[]
++getAlerts(severity?:string) : Alert[]
++getStops() : DecompressionStop[]
++getWeather() : WeatherConditions
++getEquipment() : Equipment
++getMedia() : Media[]
++computeStats() : void
+}
+
+class Measurement {
++measurement_id : int
++dive_id : int
++timestamp : datetime
++depth_current : float
++temperature : float
++ascent_speed : float
++air_pressure : float
++cumulative_ascent : float
++validate() : boolean
+}
+
+class Alert {
++alert_id : int
++dive_id : int
++code : string
++message : string
++severity : string
++acknowledged : boolean
++timestamp : datetime
++acknowledge() : void
+}
+
+class DecompressionStop {
++stop_id : int
++dive_id : int
++depth : float
++duration : int
+}
+
+class Compass {
++compass_id : int
++dive_id : int
++timestamp : datetime
++heading : float
+}
+
+class SurfaceInterval {
++interval_id : int
++user_id : int
++previous_dive_id : int
++interval_duration : int
+}
+
+class WeatherConditions {
++weather_id : int
++dive_id : int
++surface_temperature : float
++wind_speed : float
++wave_height : float
++visibility_surface : float
++description : string
+}
+
+class Equipment {
++equipment_id : int
++dive_id : int
++wetsuit_thickness : float
++tank_size : float
++tank_pressure_start : float
++tank_pressure_end : float
++weights_used : float
+}
+
+class Media {
++media_id : int
++dive_id : int
++media_type : string
++url : string
++description : string
++timestamp_taken : datetime
++uploaded_date : datetime
+}
+
+' Associations
+User "1" -- "0.." Device : owns
+Device "1" -- "0.." BatteryStatus : monitors
+User "1" -- "0.." Dive : performs
+Dive "1" -- "0..1" Location : occurs_at
+Dive "1" -- "0..1" Gas : uses
+Dive "1" -- "0..*" Measurement : records
+Dive "1" -- "0..*" Alert : triggers
+Dive "1" -- "0.." DecompressionStop : requires
+Dive "1" -- "0.." Compass : orientation
+Dive "1" -- "0..1" WeatherConditions : has
+Dive "1" -- "0..1" Equipment : uses
+Dive "1" -- "0..*" Media : contains
+User "1" -- "0..*" SurfaceInterval : has
+SurfaceInterval "0..1" -- "1" Dive : previous
+
+@enduml

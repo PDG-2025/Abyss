@@ -1,0 +1,163 @@
+@startuml database
+
+entity "User" as User {
+  *user_id : int <<PK>>
+  --
+  name : varchar(100)
+  email : varchar(255) <<UNIQUE>>
+  password_hash : varchar(255)
+}
+
+entity "Device" as Device {
+  *device_id : int <<PK>>
+  --
+  user_id : int <<FK>>
+  serial_number : varchar(100)
+  model : varchar(100)
+  firmware_version : varchar(50)
+}
+
+entity "BatteryStatus" as BatteryStatus {
+  *battery_id : int <<PK>>
+  --
+  device_id : int <<FK>>
+  percentage : int
+  status_date : datetime
+}
+
+entity "Dive" as Dive {
+  *dive_id : int <<PK>>
+  --
+  user_id : int <<FK>>
+  device_id : int <<FK>>
+  location_id : int <<FK>>
+  gas_id : int <<FK>>
+  buddy_name : varchar(100)
+  dive_purpose : varchar(100)
+  entry_type : varchar(50)
+  certification_level : varchar(100)
+  visibility_underwater : float
+  notes : text
+  date : datetime
+  duration : int
+  depth_max : float
+  average_depth : float
+  ndl_limit : int
+}
+
+entity "Gas" as Gas {
+  *gas_id : int <<PK>>
+  --
+  name : varchar(50)
+  oxygen : float
+  nitrogen : float
+  helium : float
+}
+
+entity "Measurement" as Measurement {
+  *measurement_id : int <<PK>>
+  --
+  dive_id : int <<FK>>
+  timestamp : datetime
+  depth_current : float
+  temperature : float
+  ascent_speed : float
+  air_pressure : float
+  cumulative_ascent : float
+}
+
+entity "Alert" as Alert {
+  *alert_id : int <<PK>>
+  --
+  dive_id : int <<FK>>
+  code : varchar(50)   // ex: ASCENT_TOO_FAST
+  message : varchar(255)
+  severity : varchar(20)
+  acknowledged : boolean
+  timestamp : datetime
+}
+
+entity "DecompressionStop" as DecompressionStop {
+  *stop_id : int <<PK>>
+  --
+  dive_id : int <<FK>>
+  depth : float
+  duration : int
+}
+
+entity "Compass" as Compass {
+  *compass_id : int <<PK>>
+  --
+  dive_id : int <<FK>>
+  timestamp : datetime
+  heading : float
+}
+
+entity "SurfaceInterval" as SurfaceInterval {
+  *interval_id : int <<PK>>
+  --
+  user_id : int <<FK>>
+  previous_dive_id : int <<FK>>
+  interval_duration : int
+}
+
+entity "Location" as Location {
+  *location_id : int <<PK>>
+  --
+  name : varchar(100)
+  latitude : decimal(9,6)
+  longitude : decimal(9,6)
+  water_type : varchar(50)
+  certification_required : varchar(100)
+}
+
+entity "WeatherConditions" as WeatherConditions {
+  *weather_id : int <<PK>>
+  --
+  dive_id : int <<FK>>
+  surface_temperature : float
+  wind_speed : float
+  wave_height : float
+  visibility_surface : float
+  description : varchar(255)
+}
+
+entity "Equipment" as Equipment {
+  *equipment_id : int <<PK>>
+  --
+  dive_id : int <<FK>>
+  wetsuit_thickness : float
+  tank_size : float
+  tank_pressure_start : float
+  tank_pressure_end : float
+  weights_used : float
+}
+
+entity "Media" as Media {
+  *media_id : int <<PK>>
+  --
+  dive_id : int <<FK>>
+  media_type : varchar(20) // image, video
+  url : varchar(255)
+  description : varchar(255)
+  timestamp_taken : datetime
+  uploaded_date : datetime
+}
+
+' Relations
+User ||--o{ Device : owns
+Device ||--o{ BatteryStatus : monitors
+User ||--o{ Dive : performs
+Dive }o--|| Location : occurs_at
+Dive }o--|| Gas : uses
+Dive ||--o{ Measurement : records
+Dive ||--o{ Alert : triggers
+Dive ||--o{ DecompressionStop : requires
+Dive ||--o{ Compass : orientation
+Dive ||--o{ WeatherConditions : has
+Dive ||--o{ Equipment : uses
+Dive ||--o{ Media : contains
+User ||--o{ SurfaceInterval : has
+SurfaceInterval }o--|| Dive : between
+
+@enduml
