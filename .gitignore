@@ -43,3 +43,6 @@ wheels/
 .installed.cfg
 *.egg
 
+/app/android/.gradle
+node_modules
+    
