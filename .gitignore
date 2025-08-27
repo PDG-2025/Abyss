@@ -43,3 +43,4 @@ wheels/
 .installed.cfg
 *.egg
 
+api/.env.test
