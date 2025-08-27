@@ -12,7 +12,7 @@
     "test:migrate": "psql postgres://abyss:abyss@localhost:5433/abyss_test -f ./migrations/init.sql"
   },
   "keywords": [],
-  "author": "",
+  "author": "Fullann",
   "license": "ISC",
   "description": "",
   "dependencies": {
