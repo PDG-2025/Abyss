@@ -6,9 +6,13 @@ const router = Router();
 
 // Remplacer la liste de paliers pour la plongée
 router.post("/dives/:dive_id/stops", requireAuth, async (req, res, next) => {
-  const client = await (await import("pg")).Pool.prototype.connect
-    .call(require("../db/pool").pool)
-    .catch(() => null);
+  const pool = require("../db/pool").pool;
+  let client;
+  try {
+    client = await pool.connect();
+  } catch {
+    client = null;
+  }
   try {
     if (!client) throw new Error("DB");
     const uid = (req as any).user.user_id;
