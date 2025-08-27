@@ -18,16 +18,28 @@ router.post(
   async (req, res, next) => {
     try {
       const b = (req as any).body;
+      const waterType = b.water_type ?? null;
       const { rows } = await query(
-        "INSERT INTO \"Location\"(name,latitude,longitude,water_type,certification_required) VALUES ($1,$2,$3,COALESCE($4,'unknown'),$5) RETURNING *",
+        `INSERT INTO "Location"(
+    name, latitude, longitude, water_type, certification_required
+  )
+  VALUES (
+    $1,
+    $2,
+    $3,
+    COALESCE($4::water_kind, 'fresh'::water_kind),
+    $5
+  )
+  RETURNING *`,
         [
           b.name,
           b.latitude ?? null,
           b.longitude ?? null,
-          b.water_type ?? null,
+          waterType,
           b.certification_required ?? null,
         ]
       );
+
       res.status(201).json(rows);
     } catch (e) {
       next(e);
@@ -76,17 +88,27 @@ router.patch(
     try {
       const { id } = (req as any).params;
       const b = (req as any).body;
+      const waterType = b.water_type ?? null;
+
       const { rows } = await query(
-        'UPDATE "Location" SET name=COALESCE($1,name), latitude=COALESCE($2,latitude), longitude=COALESCE($3,longitude), water_type=COALESCE($4,water_type), certification_required=COALESCE($5,certification_required) WHERE location_id=$6 RETURNING *',
+        `UPDATE "Location"
+   SET name = COALESCE($1, name),
+       latitude = COALESCE($2, latitude),
+       longitude = COALESCE($3, longitude),
+       water_type = COALESCE($4::water_kind, water_type),
+       certification_required = COALESCE($5, certification_required)
+   WHERE location_id = $6
+   RETURNING *`,
         [
           b.name ?? null,
           b.latitude ?? null,
           b.longitude ?? null,
-          b.water_type ?? null,
+          waterType,
           b.certification_required ?? null,
           id,
         ]
       );
+
       if (!rows) return res.status(404).json({ error: "Lieu introuvable" });
       res.json(rows);
     } catch (e) {

@@ -24,7 +24,7 @@ router.post(
         'INSERT INTO "Device"(user_id,serial_number,model,firmware_version) VALUES ($1,$2,$3,$4) RETURNING *',
         [uid, b.serial_number, b.model, b.firmware_version]
       );
-      res.status(201).json(rows);
+      res.status(201).json(rows[0]);
     } catch (e: any) {
       if (e.code === "23505")
         return res

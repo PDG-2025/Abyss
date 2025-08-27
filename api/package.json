@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only app.ts",
     "build": "tsc",
-    "start": "node dist/app.js",
+    "start": "NODE_ENV=prod npx ts-node server.ts",
+    "start:test": "NODE_ENV=test npx ts-node server.ts",
     "test": "cross-env NODE_ENV=test jest --runInBand",
     "test:migrate": "psql postgres://abyss:abyss@localhost:5433/abyss_test -f ./migrations/init.sql"
   },
@@ -15,6 +16,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "axios": "^1.11.0",
     "bcrypt": "^6.0.0",
     "compression": "^1.8.1",
     "cors": "^2.8.5",
