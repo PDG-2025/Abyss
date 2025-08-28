@@ -40,7 +40,7 @@ router.post(
         ]
       );
 
-      res.status(201).json(rows);
+      res.status(201).json(rows[0]);
     } catch (e) {
       next(e);
     }
@@ -73,7 +73,7 @@ router.get(
         [id]
       );
       if (!rows) return res.status(404).json({ error: "Lieu introuvable" });
-      res.json(rows);
+      res.json(rows[0]);
     } catch (e) {
       next(e);
     }
