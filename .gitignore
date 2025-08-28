@@ -45,3 +45,4 @@ wheels/
 
 /app/android/.gradle
 node_modules
+api/.env.prod

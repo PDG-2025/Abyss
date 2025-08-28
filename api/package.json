@@ -1,15 +1,16 @@
 {
-  "name": "api",
+  "name": "api-abyss",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
   "type": "commonjs",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only app.ts",
     "build": "tsc",
-    "start": "NODE_ENV=prod npx ts-node server.ts",
+    "start": "NODE_ENV=prod node dist/server.js",
     "start:test": "NODE_ENV=test npx ts-node server.ts",
     "test": "cross-env NODE_ENV=test jest --runInBand",
-    "test:migrate": "psql postgres://abyss:abyss@localhost:5433/abyss_test -f ./migrations/init.sql"
+    "test:migrate": "psql postgres://abyss:abyss@localhost:5433/abyss_test -f ./migrations/init.sql",
+    "create:data":"npx ts-node scripts/seed-api.ts"
   },
   "keywords": [],
   "author": "Fullann",
