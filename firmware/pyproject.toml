@@ -7,7 +7,7 @@ name = "abyss-firmware"
 version = "0.1.0"
 description = "Diving App for Raspberry"
 authors = [{name = "Mathéo Lopez, Nathan Füllemann, Arno Tribolet", email = "*@hes-so.ch"}]
-dependencies = []
+dependencies = ["smbus2>=0.4.1"]
 requires-python = ">=3.8"
 
 [project.optional-dependencies]
