@@ -9,6 +9,8 @@ type AuthState = {
   setSession: (u: User, t: string) => Promise<void>;
   clearSession: () => Promise<void>;
   restore: () => Promise<void>;
+  refreshToken: string | null;
+  setTokens: (access: string, refresh?: string | null) => Promise<void>;
 };
 
 const TOKEN_KEY = 'abyss_token';
@@ -23,15 +25,27 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     await SecureStore.setItemAsync(USER_KEY, JSON.stringify(user));
     set({ user, token, isAuthenticated: true });
   },
-  clearSession: async () => {
-    await SecureStore.deleteItemAsync(TOKEN_KEY);
-    await SecureStore.deleteItemAsync(USER_KEY);
-    set({ user: null, token: null, isAuthenticated: false });
+  refreshToken: null,
+  setTokens: async (token, refresh = null) => {
+    await SecureStore.setItemAsync('abyss_token', token);
+    if (refresh != null) {
+      await SecureStore.setItemAsync('abyss_refresh', refresh);
+      set({ token, refreshToken: refresh, isAuthenticated: true });
+    } else {
+      set({ token, isAuthenticated: !!token });
+    }
   },
   restore: async () => {
-    const token = await SecureStore.getItemAsync(TOKEN_KEY);
-    const userRaw = await SecureStore.getItemAsync(USER_KEY);
-    const user = userRaw ? (JSON.parse(userRaw) as User) : null;
-    set({ token, user, isAuthenticated: !!token && !!user });
+    const token = await SecureStore.getItemAsync('abyss_token');
+    const refreshToken = await SecureStore.getItemAsync('abyss_refresh');
+    const userRaw = await SecureStore.getItemAsync('abyss_user');
+    const user = userRaw ? JSON.parse(userRaw) : null;
+    set({ token, refreshToken, user, isAuthenticated: !!token && !!user });
+  },
+  clearSession: async () => {
+    await SecureStore.deleteItemAsync('abyss_token');
+    await SecureStore.deleteItemAsync('abyss_refresh');
+    await SecureStore.deleteItemAsync('abyss_user');
+    set({ user: null, token: null, refreshToken: null, isAuthenticated: false });
   },
 }));
