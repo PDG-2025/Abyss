@@ -1,23 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { View, ActivityIndicator, Text } from "react-native";
 import MapView, { Marker, Callout } from "react-native-maps";
-import { api } from "../../services/api";
-import type { Paged } from "../../types/dto";
-
-type DiveItem = {
-  dive_id: number;
-  date: string;
-  depth_max: number;
-  average_depth: number;
-  location_id?: number | null;
-};
-
-type LocationItem = {
-  location_id: number;
-  name: string;
-  latitude: number;
-  longitude: number;
-};
+import { listDives } from "../../services/dives";
+import { getLocationsBulk, LocationItem } from "../../services/locations";
 
 type MapDive = {
   dive_id: number;
@@ -37,17 +22,9 @@ export default function MapScreen() {
       setLoading(true);
       setError(null);
       try {
-        // 1) Récupération des dives
-        const res = await api.get("/dives?page=1&limit=300");
-        if (res.status !== 200) {
-          setError(res.data?.error || "Erreur chargement des plongées");
-          return;
-        }
+        const divesData = await listDives({ page: 1, limit: 300 });
+        const divesRaw = divesData.data;
 
-        const payload = res.data as Paged<DiveItem>;
-        const divesRaw = payload.data;
-
-        // 2) Récupération des locations uniques par ID
         const locationIds = Array.from(
           new Set(
             divesRaw
@@ -55,20 +32,11 @@ export default function MapScreen() {
               .filter((id): id is number => typeof id === "number")
           )
         );
-        
-        const locationsById = new Map<number, LocationItem>();
-        if (locationIds.length > 0) {
-          const requests = locationIds.map((id) => api.get(`/locations/${id}`));
-          const responses = await Promise.allSettled(requests);
-          responses.forEach((r) => {
-            if (r.status === "fulfilled" && r.value.status === 200) {
-              const loc = r.value.data as LocationItem;
-              locationsById.set(loc.location_id, loc);
-            }
-          });
-        }
 
-        // 3) Fusion dives + locations
+        const locations = await getLocationsBulk(locationIds);
+        const locationsById = new Map<number, LocationItem>();
+        locations.forEach((loc) => locationsById.set(loc.location_id, loc));
+
         const enriched: MapDive[] = divesRaw.map((d) => {
           const loc = d.location_id ? locationsById.get(d.location_id) : undefined;
           return {
@@ -85,29 +53,18 @@ export default function MapScreen() {
               : undefined,
           };
         });
-        
+
         setDives(enriched.filter((d) => d.location));
       } catch (e: any) {
-        setError(e?.response?.data?.error || e?.message || "Erreur inattendue");
+        setError(e?.message || "Erreur inattendue");
       } finally {
         setLoading(false);
       }
     })();
   }, []);
 
-  if (loading)
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator />
-      </View>
-    );
-
-  if (error)
-    return (
-      <View style={{ padding: 16 }}>
-        <Text style={{ color: "red" }}>{error}</Text>
-      </View>
-    );
+  if (loading) return <ActivityIndicator style={{ flex: 1 }} />;
+  if (error) return <Text style={{ color: "red" }}>{error}</Text>;
 
   return (
     <MapView
@@ -134,9 +91,7 @@ export default function MapScreen() {
                 <Text style={{ fontWeight: "600" }}>{d.location.name}</Text>
                 <Text>Plongée #{d.dive_id}</Text>
                 <Text>{new Date(d.date).toLocaleString()}</Text>
-                <Text>
-                  Max {d.depth_max} m — Moy {d.average_depth} m
-                </Text>
+                <Text>Max {d.depth_max} m — Moy {d.average_depth} m</Text>
               </View>
             </Callout>
           </Marker>
