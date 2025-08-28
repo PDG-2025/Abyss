@@ -22,8 +22,10 @@ router.get(
       const page = Number(q.page ?? 1),
         limit = Number(q.limit ?? 50),
         offset = (page - 1) * limit;
+
       const filters: string[] = ["user_id=$1"];
       const params: any[] = [uid];
+
       if (q.from) {
         params.push(q.from);
         filters.push(`date >= $${params.length}`);
@@ -44,12 +46,32 @@ router.get(
         params.push(q.gas_id);
         filters.push(`gas_id = $${params.length}`);
       }
+
       params.push(limit, offset);
-      const sql = `SELECT * FROM vw_dive_summary WHERE ${filters.join(
-        " AND "
-      )} ORDER BY date DESC LIMIT $${params.length - 1} OFFSET $${
-        params.length
-      }`;
+
+      const sql = `
+SELECT 
+  dive_id,
+  user_id,
+  device_id,
+  location_id,
+  gas_id,
+  buddy_name,
+  dive_purpose,
+  entry_type,
+  certification_level,
+  visibility_underwater,
+  date,
+  duration,
+  depth_max,
+  average_depth,
+  ndl_limit
+FROM "Dive"
+WHERE ${filters.join(" AND ")}
+ORDER BY date DESC
+LIMIT $${params.length - 1} OFFSET $${params.length}
+`;
+
       const { rows } = await query(sql, params);
       res.json({ page, limit, data: rows });
     } catch (e) {
@@ -109,9 +131,10 @@ router.get(
         'SELECT * FROM "Dive" WHERE dive_id=$1 AND user_id=$2',
         [id, uid]
       );
-      if (rows.length === 0) return res.status(404).json({ error: 'Dive not found' });
+      if (rows.length === 0)
+        return res.status(404).json({ error: "Dive not found" });
 
-    res.json(rows[0]);
+      res.json(rows[0]);
     } catch (e) {
       next(e);
     }
@@ -190,7 +213,8 @@ router.delete(
         'DELETE FROM "Dive" WHERE dive_id=$1 AND user_id=$2',
         [id, uid]
       );
-         if (rowCount === 0) return res.status(404).json({ error: 'Dive not found' });
+      if (rowCount === 0)
+        return res.status(404).json({ error: "Dive not found" });
       res.status(204).send();
     } catch (e) {
       next(e);
