@@ -4,12 +4,14 @@ import MainTabs from './MainTabs';
 import LoginScreen from '../screens/Auth/LoginScreen';
 import RegisterScreen from '../screens/Auth/RegisterScreen';
 import DiveDetailScreen from '../screens/Dives/DiveDetailScreen';
+import ForgotScreen from '../screens/Auth/ForgotScreen';
 import { useAuthStore } from '../store/auth';
 
 export type RootStackParamList = {
   Login: undefined;
   Register: undefined;
   Main: undefined;
+  Forgot: undefined;
   DiveDetail: { dive_id: number };
 };
 
@@ -29,6 +31,7 @@ export default function RootStack() {
         <>
           <Stack.Screen name="Login" component={LoginScreen} options={{ title: 'Connexion' }} />
           <Stack.Screen name="Register" component={RegisterScreen} options={{ title: 'Inscription' }} />
+          <Stack.Screen name="Forgot" component={ForgotScreen} options={{ title: 'Mot de passe oublié' }} />
         </>
       )}
     </Stack.Navigator>
