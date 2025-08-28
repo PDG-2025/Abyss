@@ -1,40 +1,49 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity } from 'react-native';
-import { api } from '../../services/api';
-import type { Dive, Paged } from '../../types/dto';
+import { View, FlatList, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
+import { initPageState, loadNextPage, PageState } from '../../utils/paginate';
+import { listDives } from '../../services/dives';
+import type { Dive } from '../../types/dto';
 import { useNavigation } from '@react-navigation/native';
 
 export default function DivesListScreen() {
-  const [data, setData] = useState<Dive[]>([]);
-  const [page, setPage] = useState(1);
+  const [state, setState] = useState<PageState<Dive>>(initPageState<Dive>(20));
   const nav = useNavigation<any>();
 
-  const load = async (p = 1) => {
-    const res = await api.get(`/dives?page=${p}&limit=20`);
-    if (res.status === 200) {
-      const payload = res.data as Paged<Dive>;
-      setData(p === 1 ? payload.data : [...data, ...payload.data]);
-      setPage(p);
-    }
-  };
+  const fetcher = (page: number, limit: number) => listDives({ page, limit });
 
-  useEffect(() => { load(1); }, []);
+  useEffect(() => {
+    loadNextPage(state, setState, fetcher);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const loadMore = () => loadNextPage(state, setState, fetcher);
+
+  if (!state.items.length && state.loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center' }}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
 
   return (
     <View style={{ flex: 1 }}>
       <FlatList
-        data={data}
-        keyExtractor={(item) => `${item.dive_id}`}
-        onEndReached={() => load(page + 1)}
+        data={state.items}
+        keyExtractor={(d) => String(d.dive_id)}
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.4}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => nav.navigate('DiveDetail', { dive_id: item.dive_id })}>
+          <TouchableOpacity onPress={() => nav.getParent()?.navigate('DiveDetail', { dive_id: item.dive_id })}>
             <View style={{ padding: 12, borderBottomWidth: 1 }}>
               <Text>{new Date(item.date).toLocaleString()}</Text>
-              <Text>Max: {item.depth_max} m — Avg: {item.average_depth} m</Text>
+              <Text>Max {item.depth_max} m — Moy {item.average_depth} m</Text>
             </View>
           </TouchableOpacity>
         )}
+        ListFooterComponent={state.loading ? <ActivityIndicator /> : null}
       />
+      {state.error && <Text style={{ color: 'red', padding: 12 }}>{state.error}</Text>}
     </View>
   );
 }

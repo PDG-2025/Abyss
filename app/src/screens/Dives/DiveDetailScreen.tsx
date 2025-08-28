@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text } from 'react-native';
-import { api } from '../../services/api';
 import type { Dive } from '../../types/dto';
+import { getDive } from '../../services/dives';
 
 export default function DiveDetailScreen({ route }: any) {
   const { dive_id } = route.params as { dive_id: number };
@@ -9,8 +9,8 @@ export default function DiveDetailScreen({ route }: any) {
 
   useEffect(() => {
     (async () => {
-      const res = await api.get(`/dives/${dive_id}`);
-      if (res.status === 200) setDive(res.data as Dive);
+      const res = await getDive(dive_id);
+      setDive(res);
     })();
   }, [dive_id]);
 
