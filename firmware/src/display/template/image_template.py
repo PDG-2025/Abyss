@@ -1,12 +1,11 @@
 from PIL import Image, ImageDraw, ImageFont
 
 try:
-    FT_BIG = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 40)
-    FT_SMALL = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 20)
+    FT_BIG = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",src 40)
+    FT_SMALL = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 23)
 except:
     FT_BIG = ImageFont.load_default()
     FT_SMALL = ImageFont.load_default()
-    print("Default")
 
 class ImageTemplate:
     def __init__(self, template_path):
@@ -15,10 +14,11 @@ class ImageTemplate:
         self.template_path = template_path
         self.fields = {}
 
-    def add_field(self, name, x, y):
+    def add_field(self, name, x, y, font):
         self.fields[name] = {
             'pos': (x,y),
-            'value': "-1"
+            'value': "-1",
+            'font': font
         }
     def modify_field(self, name, value):
         self.fields[name]['value'] = value
@@ -30,7 +30,11 @@ class ImageTemplate:
         for field, info in self.fields.items():
             pos = info['pos']
             value = info['value']
-            draw.text((pos[0], pos[1]), value, font=FT_SMALL, fill="black")
+            font = info['font']
+            draw.text((pos[0], pos[1]), value, font=font, fill="black")
 
         return img
+
+    def update(self):
+        pass
 

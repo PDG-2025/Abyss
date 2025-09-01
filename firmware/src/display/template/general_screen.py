@@ -59,4 +59,17 @@ class GeneralScreen(ImageTemplate):
 
 
     def update(self):
+        '''
+        Need to update:
+        - time
+        - battery
+        - pressure
+        - ndl
+        - depth
+        - updown
+        - temp
+        - mod
+        - palier
+        - timer
+        '''
         return "Not implemented yet"
