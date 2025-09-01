@@ -8,10 +8,10 @@ except:
     FT_SMALL = ImageFont.load_default()
 
 class ImageTemplate:
-    def __init__(self, template_path):
+    def __init__(self):
         self.width = 480
         self.height = 320
-        self.template_path = template_path
+        self.template_path = "png/fond.png"
         self.fields = {}
 
     def add_field(self, name, x, y, font):

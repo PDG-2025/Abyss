@@ -2,8 +2,8 @@ from display.template.image_template import ImageTemplate, FT_SMALL, FT_BIG
 
 
 class GeneralScreen(ImageTemplate):
-    def __init__(self, template_path):
-        super().__init__(template_path)
+    def __init__(self):
+        super().__init__()
         # Initiate Indicators
         self.add_field("ind_battery", 260, 0, FT_SMALL)
         self.modify_field("ind_battery", "%")
