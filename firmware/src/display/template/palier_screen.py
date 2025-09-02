@@ -29,3 +29,14 @@ class PalierScreen(ImageTemplate):
         self.add_field("val_palier", 220, 210, FT_SMALL)
         self.add_field("val_depth", 220, 240, FT_SMALL)
         self.add_field("val_updown", 150, 280, FT_SMALL)
+
+
+    def update(self):
+        '''
+        add update:
+        - pressure
+        - time left
+        - palier
+        - depth
+        - updown
+        '''

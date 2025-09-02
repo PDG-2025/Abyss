@@ -11,7 +11,7 @@ class ImageTemplate:
     def __init__(self):
         self.width = 480
         self.height = 320
-        self.background = "#d3d3d3"
+        self.background = "#d3d3d3" # gris clair
         self.fields = {}
 
     def add_field(self, name, x, y, font):

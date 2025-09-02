@@ -23,3 +23,12 @@ class ConfigScreen(ImageTemplate):
         self.add_field("val_gaz_perc", 320, 100, FT_SMALL)
         self.add_field("val_alarme", 210, 150, FT_SMALL)
         self.add_field("val_compas", 210, 200, FT_SMALL)
+
+    def update(self):
+        '''
+        Need to update:
+        - gaz
+        - gaz_perc
+        - alarme
+        - compas
+        '''
