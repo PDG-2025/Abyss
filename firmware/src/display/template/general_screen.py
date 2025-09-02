@@ -33,20 +33,20 @@ class GeneralScreen(ImageTemplate):
         self.modify_field("ind_timer", "Durée plongée:")
 
         # Initiate Values
-        self.add_field("value_time", 10, 0, FT_SMALL)
-        self.add_field("value_battery", 215, 0, FT_SMALL)
-        self.add_field("value_pressure", 385, 0, FT_SMALL)
+        self.add_field("val_time", 10, 0, FT_SMALL)
+        self.add_field("val_battery", 215, 0, FT_SMALL)
+        self.add_field("val_pressure", 385, 0, FT_SMALL)
 
-        self.add_field("value_ndl", 30, 115, FT_BIG)
-        self.add_field("value_depth", 170, 95, FT_BIG)
-        self.add_field("value_updown", 320, 95, FT_BIG) # ↑ ↓
+        self.add_field("val_ndl", 30, 115, FT_BIG)
+        self.add_field("val_depth", 170, 95, FT_BIG)
+        self.add_field("val_updown", 320, 95, FT_BIG) # ↑ ↓
 
-        self.add_field("value_temp", 100, 190, FT_SMALL)
-        self.add_field("value_mod", 360, 190, FT_SMALL)
+        self.add_field("val_temp", 100, 190, FT_SMALL)
+        self.add_field("val_mod", 360, 190, FT_SMALL)
 
-        self.add_field("value_palier", 290, 235, FT_SMALL)
+        self.add_field("val_palier", 290, 235, FT_SMALL)
 
-        self.add_field("value_timer", 290, 280, FT_SMALL)
+        self.add_field("val_timer", 290, 280, FT_SMALL)
 
 
 
