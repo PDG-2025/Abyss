@@ -3,7 +3,7 @@ from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
 
 
-LOG_FILE = "logs/mesures.json"
+LOG_FILE = "mesures.json"
 QMC5883L_BUS = 1
 QMC5883L_ADDR = 0x0D
 QMC5883L_REGISTER = 0x09
@@ -31,7 +31,7 @@ class SensorsManager:
         self.qmc5883l = init_qmc5883l()
         self.x_offset = None
         self.y_offset = None
-        self.stop = True
+        self.stop_thread = True
         self.thread = threading.Thread(target=self.job)
 
 
@@ -97,7 +97,7 @@ class SensorsManager:
         return heading
 
     def job(self):
-        while not self.stop:
+        while not self.stop_thread:
             if self.ms5837.read():
                 temp = self.ms5837.temperature()
                 press = self.ms5837.pressure()
@@ -107,11 +107,12 @@ class SensorsManager:
 
             heading = self.read_heading()
             self.log_measurement(temp, press, depth, heading)
+            print(f"Temp: {temp:.2f} °C | Pression: {press:.2f} mbar | Profondeur: {depth:.2f} m | Azimut: {heading:.2f} °")
             time.sleep(0.2)
 
     def start(self):
         try:
-            self.stop = False
+            self.stop_thread = False
             self.thread.start()
         except:
             return False
@@ -119,7 +120,7 @@ class SensorsManager:
 
     def stop(self):
         try:
-            self.stop = True
+            self.stop_thread = True
             self.thread.join()
         except:
             return False
