@@ -3,299 +3,322 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Abyss - L'ordinateur de plongée nouvelle génération</title>
+    <title>Abyss - Ordinateur de plongée connecté</title>
+    <link rel="icon" type="image/x-icon" href="./ressources/img/ABYSS_logo.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap');
-        
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: #f0f8ff;
-            overflow-x: hidden;
-        }
-        
-        .wave-bg {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 100px;
-            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" fill="%230075b8"/><path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5" fill="%230075b8"/><path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" fill="%230075b8"/></svg>');
-            background-size: cover;
-            z-index: -1;
-        }
-        
-        .product-shadow {
-            box-shadow: 0 30px 60px -15px rgba(0, 117, 184, 0.4);
-        }
-        
-        .water-effect {
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .water-effect::after {
-            content: "";
-            position: absolute;
-            top: -50%;
-            left: -60%;
-            width: 200%;
-            height: 200%;
-            background: rgba(255, 255, 255, 0.13);
-            transform: rotate(30deg);
-            animation: shine 3s infinite;
-        }
-        
-        @keyframes shine {
-            0% { left: -60%; }
-            20% { left: 100%; }
-            100% { left: 100%; }
-        }
-        
-        .feature-icon {
-            transition: all 0.3s ease;
-        }
-        
-        .feature-card:hover .feature-icon {
-            transform: translateY(-5px) scale(1.1);
-        }
-        
-        .parallax-bg {
-            background-attachment: fixed;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: cover;
-        }
-    </style>
+    <link rel="stylesheet" href="./ressources/css/style.css">
 </head>
-<body class="text-blue-900">
+<body class="font-sans antialiased text-gray-800">
     <!-- Navigation -->
-    <nav class="bg-white/90 backdrop-blur-md shadow-sm fixed w-full z-50">
+    <nav class="bg-white shadow-lg fixed w-full z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-20 items-center">
+            <div class="flex justify-between h-24 items-center">
                 <div class="flex items-center">
                     <div class="flex-shrink-0 flex items-center">
-                        <i class="fas fa-water text-3xl text-blue-600 mr-2"></i>
-                        <span class="text-xl font-bold text-blue-900">ABYSS</span>
+                        <img src="./ressources/img/ABYSS_logo.png" alt="Logo Abyss" class="h-16 md:h-24">
                     </div>
                 </div>
-                <div class="hidden md:block">
-                    <div class="ml-10 flex items-baseline space-x-8">
-                        <a href="#features" class="px-3 py-2 text-sm font-medium hover:text-blue-600 transition">Fonctionnalités</a>
-                        <a href="#technology" class="px-3 py-2 text-sm font-medium hover:text-blue-600 transition">Technologie</a>
-                        <a href="#gallery" class="px-3 py-2 text-sm font-medium hover:text-blue-600 transition">Galerie</a>
-                        <a href="#testimonials" class="px-3 py-2 text-sm font-medium hover:text-blue-600 transition">Témoignages</a>
-                        <a href="#contact" class="px-3 py-2 text-sm font-medium hover:text-blue-600 transition">Contact</a>
-                    </div>
+                
+                <!-- Desktop Navigation -->
+                <div class="hidden md:ml-6 md:flex md:items-center md:space-x-8">
+                    <a href="#features" class="text-gray-900 hover:text-blue-600 px-3 py-2 text-sm font-medium">Fonctionnalités</a>
+                    <a href="#safety" class="text-gray-900 hover:text-blue-600 px-3 py-2 text-sm font-medium">Sécurité</a>
+                    <a href="#gallery" class="text-gray-900 hover:text-blue-600 px-3 py-2 text-sm font-medium">Galerie</a>
                 </div>
-                <div class="md:ml-10 flex items-center">
-                    <a href="#pricing" class="px-4 py-2 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 transition">Précommander</a>
-                </div>
-                <div class="-mr-2 flex md:hidden">
-                    <button type="button" class="inline-flex items-center justify-center p-2 rounded-md text-blue-900 hover:text-blue-600 focus:outline-none transition">
-                        <i class="fas fa-bars text-xl"></i>
+                
+                
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-button" class="text-gray-500 hover:text-gray-900 focus:outline-none">
+                        <div class="hamburger w-6 flex flex-col justify-between h-5">
+                            <div class="top-line h-0.5 w-6 bg-gray-600 rounded transition-all"></div>
+                            <div class="middle-line h-0.5 w-6 bg-gray-600 rounded transition-all"></div>
+                            <div class="bottom-line h-0.5 w-6 bg-gray-600 rounded transition-all"></div>
+                        </div>
                     </button>
+                </div>
+            </div>
+            
+            <!-- Mobile Navigation -->
+            <div id="mobile-menu" class="mobile-menu md:hidden bg-white">
+                <div class="px-2 pt-2 pb-4 space-y-1">
+                    <a href="#features" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50">Fonctionnalités</a>
+                    <a href="#safety" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50">Sécurité</a>
+                    <a href="#gallery" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50">Galerie</a>
                 </div>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="relative pt-32 pb-20 md:pt-40 md:pb-28 bg-gradient-to-b from-blue-50 to-white">
+    <section class="hero-gradient pt-24 pb-32 md:pt-32 md:pb-48 relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="md:grid md:grid-cols-2 md:gap-12 items-center">
-                <div class="mb-12 md:mb-0">
-                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
-                        Plongez plus profondément avec <span class="text-blue-600">Abyss</span>
+            <div class="lg:grid lg:grid-cols-2 lg:gap-8 items-center">
+                <div class="text-center lg:text-left">
+                    <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
+                        L'ordinateur de plongée <span class="text-blue-200">intelligent</span>
                     </h1>
-                    <p class="text-lg md:text-xl text-blue-800 mb-8">
-                        L'ordinateur de plongée nouvelle génération qui révolutionne votre expérience sous-marine avec une technologie de pointe et un design élégant.
+                    <p class="text-lg sm:text-xl text-blue-100 mb-8 max-w-lg mx-auto lg:mx-0">
+                        Ordinateur de plongée nouvelle génération conçu par des étudiants passionnés. Sécurité, précision et technologie de pointe pour tous vos types de plongée.
                     </p>
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <a href="#pricing" class="px-8 py-4 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition transform hover:scale-105 shadow-lg">
-                            Découvrir Abyss
-                        </a>
-                        <a href="#features" class="px-8 py-4 border-2 border-blue-600 text-blue-600 rounded-lg font-bold hover:bg-blue-50 transition transform hover:scale-105">
-                            <i class="fas fa-play-circle mr-2"></i> Voir la démo
-                        </a>
-                    </div>
-                    <div class="mt-8 flex items-center">
-                        <div class="flex -space-x-2">
-                            <img class="inline-block h-10 w-10 rounded-full ring-2 ring-white" src="https://randomuser.me/api/portraits/women/12.jpg" alt="">
-                            <img class="inline-block h-10 w-10 rounded-full ring-2 ring-white" src="https://randomuser.me/api/portraits/men/33.jpg" alt="">
-                            <img class="inline-block h-10 w-10 rounded-full ring-2 ring-white" src="https://randomuser.me/api/portraits/women/45.jpg" alt="">
-                        </div>
-                        <p class="ml-4 text-sm text-blue-800">
-                            Rejoint par <span class="font-bold">850+</span> plongeurs professionnels
-                        </p>
+                    <p class="text- sm:text-xl text-blue-100 mb-8 max-w-lg mx-auto lg:mx-0">
+                    Arno Tribolet • Nathan Füllemann • Mathéo Lopez
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                        <button class="bg-white text-blue-600 hover:bg-blue-50 px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-base sm:text-lg transition duration-300 shadow-lg">
+                            Découvrir <span class="hidden sm:inline">les fonctionnalités</span> <i class="fas fa-arrow-down ml-2"></i>
+                        </button>
+                        <button class="bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold text-base sm:text-lg transition duration-300">
+                            Voir la vidéo <i class="fas fa-play ml-2"></i>
+                        </button>
                     </div>
                 </div>
-                <div class="relative water-effect">
-                    <img src="https://images.unsplash.com/photo-1560272569-c83b13b0d398?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Abyss Dive Computer" class="rounded-2xl product-shadow w-full max-w-lg mx-auto">
-                    <div class="absolute -bottom-6 -right-6 bg-white p-4 rounded-xl shadow-lg">
-                        <div class="flex items-center">
-                            <div class="bg-blue-100 p-3 rounded-lg">
-                                <i class="fas fa-trophy text-blue-600 text-xl"></i>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-xs text-blue-500">Prix 2023</p>
-                                <p class="font-bold">Meilleur équipement</p>
-                            </div>
-                        </div>
+                <div class="mt-12 sm:mt-16 lg:mt-0 relative">
+                    <div class="device-3d mx-auto w-full max-w-xs sm:max-w-md">
+                        <img src="./ressources/img/prod.jpg"
+                              alt="Abyss Dive Computer"
+                              class="rounded-3xl border-8 border-white shadow-2xl">
                     </div>
+                    <div class="absolute -bottom-10 -right-10 bg-blue-400 rounded-full w-32 h-32 opacity-20 animate-pulse-slow hidden sm:block"></div>
+                    <div class="absolute -top-10 -left-10 bg-blue-300 rounded-full w-40 h-40 opacity-20 animate-pulse-slow hidden sm:block"></div>
                 </div>
             </div>
         </div>
-        <div class="wave-bg"></div>
+        <div class="wave-shape">
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+            </svg>
+        </div>
     </section>
 
     <!-- Features Section -->
-    <section id="features" class="py-20 bg-white">
+    <section id="features" class="py-16 sm:py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4">Explorez les profondeurs en toute confiance</h2>
-                <p class="text-xl text-blue-800 max-w-3xl mx-auto">
-                    Abyss combine technologie avancée et design ergonomique pour une expérience de plongée inégalée.
+            <div class="text-center mb-12 sm:mb-16">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4">Fonctionnalités essentielles pour votre sécurité</h2>
+                <p class="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
+                   Abyss offre toutes les mesures, alertes et outils nécessaires pour une plongée en toute sécurité et confort.
                 </p>
             </div>
-            
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
                 <!-- Feature 1 -->
-                <div class="feature-card bg-blue-50 rounded-xl p-8 transition hover:shadow-lg">
-                    <div class="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
-                        <i class="fas fa-bell feature-icon text-blue-600 text-2xl"></i>
+                <div class="feature-card bg-gray-50 rounded-xl p-6 sm:p-8 transition duration-300 hover:shadow-lg">
+                    <div class="w-14 h-14 sm:w-16 sm:h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 sm:mb-6">
+                        <i class="fas fa-tachometer-alt text-blue-600 text-xl sm:text-2xl"></i>
                     </div>
-                    <h3 class="text-xl font-bold mb-3">Alertes intelligentes</h3>
-                    <p class="text-blue-800">
-                        Système d'alerte avancé qui vous prévient en temps réel des changements de profondeur, temps de plongée et conditions environnementales.
-                    </p>
+                    <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-3">Mesures en temps réel</h3>
+                    <ul class="text-gray-600 space-y-2 text-sm sm:text-base">
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Profondeur actuelle et maximale</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Temps de plongée écoulé</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Limite de non-décompression (NDL)</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Vitesse de remontée avec alerte</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Température de l'eau</span>
+                        </li>
+                    </ul>
                 </div>
-                
+
                 <!-- Feature 2 -->
-                <div class="feature-card bg-blue-50 rounded-xl p-8 transition hover:shadow-lg">
-                    <div class="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
-                        <i class="fas fa-tachometer-alt feature-icon text-blue-600 text-2xl"></i>
+                <div class="feature-card bg-gray-50 rounded-xl p-6 sm:p-8 transition duration-300 hover:shadow-lg">
+                    <div class="w-14 h-14 sm:w-16 sm:h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 sm:mb-6">
+                        <i class="fas fa-shield-alt text-blue-600 text-xl sm:text-2xl"></i>
                     </div>
-                    <h3 class="text-xl font-bold mb-3">Affichage haute visibilité</h3>
-                    <p class="text-blue-800">
-                        Écran rétro-éclairé OLED avec technologie anti-reflet pour une lecture parfaite même dans les eaux les plus sombres.
-                    </p>
+                    <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-3">Gestion de la sécurité</h3>
+                    <ul class="text-gray-600 space-y-2 text-sm sm:text-base">
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Alertes visuelles et sonores</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Paliers de décompression</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Intervalle de surface minimum</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Temps minimum avant l'avion</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Gestion multi-gaz (air, nitrox)</span>
+                        </li>
+                    </ul>
                 </div>
-                
+
                 <!-- Feature 3 -->
-                <div class="feature-card bg-blue-50 rounded-xl p-8 transition hover:shadow-lg">
-                    <div class="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
-                        <i class="fas fa-wifi feature-icon text-blue-600 text-2xl"></i>
+                <div class="feature-card bg-gray-50 rounded-xl p-6 sm:p-8 transition duration-300 hover:shadow-lg">
+                    <div class="w-14 h-14 sm:w-16 sm:h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 sm:mb-6">
+                        <i class="fas fa-map-marked-alt text-blue-600 text-xl sm:text-2xl"></i>
                     </div>
-                    <h3 class="text-xl font-bold mb-3">Connectivité sans fil</h3>
-                    <p class="text-blue-800">
-                        Synchronisation automatique avec votre smartphone pour partager vos données de plongée et suivre vos performances.
-                    </p>
-                </div>
-                
-                <!-- Feature 4 -->
-                <div class="feature-card bg-blue-50 rounded-xl p-8 transition hover:shadow-lg">
-                    <div class="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
-                        <i class="fas fa-battery-full feature-icon text-blue-600 text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">Batterie longue durée</h3>
-                    <p class="text-blue-800">
-                        Jusqu'à 30 heures d'autonomie en mode plongée et 6 mois en veille grâce à notre technologie de gestion d'énergie exclusive.
-                    </p>
-                </div>
-                
-                <!-- Feature 5 -->
-                <div class="feature-card bg-blue-50 rounded-xl p-8 transition hover:shadow-lg">
-                    <div class="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
-                        <i class="fas fa-map-marked-alt feature-icon text-blue-600 text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">GPS intégré</h3>
-                    <p class="text-blue-800">
-                        Cartographie sous-marine et suivi de position pour retrouver facilement vos sites de plongée préférés.
-                    </p>
-                </div>
-                
-                <!-- Feature 6 -->
-                <div class="feature-card bg-blue-50 rounded-xl p-8 transition hover:shadow-lg">
-                    <div class="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
-                        <i class="fas fa-lock feature-icon text-blue-600 text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">Résistance extrême</h3>
-                    <p class="text-blue-800">
-                        Certifié pour des profondeurs allant jusqu'à 150m avec un boîtier en titane léger et résistant à la corrosion.
-                    </p>
+                    <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-3">Navigation et suivi</h3>
+                    <ul class="text-gray-600 space-y-2 text-sm sm:text-base">
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Compass numérique intégré</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Enregistrement automatique des données</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Consultation de l'historique</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Synchronisation Bluetooth</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span>Application mobile dédiée</span>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Technology Section -->
-    <section id="technology" class="py-20 bg-blue-900 text-white">
+    <!-- Safety Section -->
+    <section id="safety" class="py-16 sm:py-20 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="md:grid md:grid-cols-2 md:gap-12 items-center">
-                <div class="mb-12 md:mb-0">
-                    <h2 class="text-3xl md:text-4xl font-bold mb-6">Technologie de pointe pour plongeurs exigeants</h2>
-                    <p class="text-lg text-blue-200 mb-8">
-                        Abyss intègre les dernières avancées technologiques pour vous offrir des performances inégalées sous l'eau.
+            <div class="lg:grid lg:grid-cols-2 lg:gap-12 items-center">
+                <div class="mb-8 sm:mb-12 lg:mb-0">
+                    <img src="./ressources/img/human.jpg"
+                          alt="Safety Features"
+                          class="rounded-xl shadow-xl w-full">
+                </div>
+                <div>
+                    <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4 sm:mb-6">Votre sécurité, notre priorité</h2>
+                    <p class="text-base sm:text-lg text-gray-600 mb-6 sm:mb-8">
+                        Abyss intègre des systèmes d'alerte avancés pour vous protéger dans toutes les situations de plongée.
                     </p>
-                    
-                    <div class="space-y-6">
+                                        
+                    <div class="space-y-4 sm:space-y-6">
                         <div class="flex">
                             <div class="flex-shrink-0">
-                                <div class="flex items-center justify-center h-12 w-12 rounded-md bg-blue-700 text-white">
-                                    <i class="fas fa-microchip"></i>
+                                <div class="flex items-center justify-center h-10 w-10 sm:h-12 sm:w-12 rounded-md bg-blue-100 text-blue-600">
+                                    <i class="fas fa-exclamation-triangle text-sm sm:text-base"></i>
                                 </div>
                             </div>
-                            <div class="ml-4">
-                                <h3 class="text-lg font-medium">Processeur quadricœur</h3>
-                                <p class="mt-1 text-blue-200">
-                                    Calculs en temps réel de votre profil de plongée avec une précision inégalée.
+                            <div class="ml-3 sm:ml-4">
+                                <h4 class="text-base sm:text-lg font-medium text-gray-900">Alertes intelligentes</h4>
+                                <p class="mt-1 text-gray-600 text-sm sm:text-base">
+                                    Alertes visuelles et sonores pour vitesse de remontée excessive, dépassement de NDL, profondeur maximale atteinte.
                                 </p>
                             </div>
                         </div>
-                        
+
                         <div class="flex">
                             <div class="flex-shrink-0">
-                                <div class="flex items-center justify-center h-12 w-12 rounded-md bg-blue-700 text-white">
-                                    <i class="fas fa-water"></i>
+                                <div class="flex items-center justify-center h-10 w-10 sm:h-12 sm:w-12 rounded-md bg-blue-100 text-blue-600">
+                                    <i class="fas fa-clock text-sm sm:text-base"></i>
                                 </div>
                             </div>
-                            <div class="ml-4">
-                                <h3 class="text-lg font-medium">6 capteurs environnementaux</h3>
-                                <p class="mt-1 text-blue-200">
-                                    Mesure précise de la température, pression, courant et autres paramètres vitaux.
+                            <div class="ml-3 sm:ml-4">
+                                <h4 class="text-base sm:text-lg font-medium text-gray-900">Calculs précis</h4>
+                                <p class="mt-1 text-gray-600 text-sm sm:text-base">
+                                    Algorithmes de décompression avancés pour calculer les paliers nécessaires et les intervalles de surface.
                                 </p>
                             </div>
                         </div>
-                        
+
                         <div class="flex">
                             <div class="flex-shrink-0">
-                                <div class="flex items-center justify-center h-12 w-12 rounded-md bg-blue-700 text-white">
-                                    <i class="fas fa-brain"></i>
+                                <div class="flex items-center justify-center h-10 w-10 sm:h-12 sm:w-12 rounded-md bg-blue-100 text-blue-600">
+                                    <i class="fas fa-plane text-sm sm:text-base"></i>
                                 </div>
                             </div>
-                            <div class="ml-4">
-                                <h3 class="text-lg font-medium">Algorithme intelligent</h3>
-                                <p class="mt-1 text-blue-200">
-                                    Adaptation automatique à votre style de plongée pour des recommandations personnalisées.
+                            <div class="ml-3 sm:ml-4">
+                                <h4 class="text-base sm:text-lg font-medium text-gray-900">Vol après plongée</h4>
+                                <p class="mt-1 text-gray-600 text-sm sm:text-base">
+                                    Calcul automatique du temps minimum à respecter avant de prendre l'avion après votre plongée.
                                 </p>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="relative">
-                    <img src="https://images.unsplash.com/photo-1560272569-c83b13b0d398?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Abyss Technology" class="rounded-2xl w-full shadow-xl">
-                    <div class="absolute -bottom-6 -left-6 bg-white p-4 rounded-xl shadow-lg text-blue-900">
-                        <div class="flex items-center">
-                            <div class="bg-blue-100 p-3 rounded-lg">
-                                <i class="fas fa-shield-alt text-blue-600 text-xl"></i>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-xs text-blue-500">Certification</p>
-                                <p class="font-bold">ISO 6425:2018</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- App Integration Section -->
+    <section class="py-16 sm:py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="lg:grid lg:grid-cols-2 lg:gap-12 items-center">
+                <div class="order-last lg:order-first">
+                    <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4 sm:mb-6">Application mobile dédiée</h2>
+                    <p class="text-base sm:text-lg text-gray-600 mb-6 sm:mb-8">
+                        Synchronisez vos données de plongée via Bluetooth et consultez votre historique détaillé sur votre smartphone.
+                    </p>
+                                        
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                        <div>
+                            <h4 class="text-base sm:text-lg font-medium text-gray-900 mb-2 sm:mb-3">Fonctionnalités de l'app</h4>
+                            <ul class="space-y-2 text-gray-600 text-sm sm:text-base">
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                    <span>Visualisation des profils de plongée</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                    <span>Statistiques complètes des plongées</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                    <span>Paramétrage des alertes de sécurité</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                    <span>Configuration des paramètres de l'ordinateur de plongée</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="text-base sm:text-lg font-medium text-gray-900 mb-2 sm:mb-3">Disponible sur</h4>
+                            <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
+                                <button class="flex items-center bg-gray-100 hover:bg-gray-200 px-3 sm:px-4 py-2 rounded-lg transition duration-300">
+                                    <i class="fab fa-apple text-xl sm:text-2xl mr-2"></i>
+                                    <div class="text-left">
+                                        <div class="text-xs">Télécharger sur</div>
+                                        <div class="font-semibold text-sm sm:text-base">App Store</div>
+                                    </div>
+                                </button>
+                                <button class="flex items-center bg-gray-100 hover:bg-gray-200 px-3 sm:px-4 py-2 rounded-lg transition duration-300">
+                                    <i class="fab fa-google-play text-xl sm:text-2xl mr-2"></i>
+                                    <div class="text-left">
+                                        <div class="text-xs">Disponible sur</div>
+                                        <div class="font-semibold text-sm sm:text-base">Play Store</div>
+                                    </div>
+                                </button>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <div class="mb-8 sm:mb-12 lg:mb-0 order-first lg:order-last"> 
+                    <div class="relative mx-auto max-w-xs sm:max-w-md">
+                        <div class="absolute -top-6 -left-6 bg-blue-200 rounded-xl w-32 h-32 opacity-30 animate-pulse-slow hidden sm:block"></div>
+                        <div class="absolute -bottom-6 -right-6 bg-blue-300 rounded-xl w-40 h-40 opacity-30 animate-pulse-slow hidden sm:block"></div>
+                        <img src="./ressources/img/padi.jpg"
+                              alt="Mobile App"
+                              class="relative rounded-xl shadow-xl w-full">
                     </div>
                 </div>
             </div>
@@ -303,437 +326,130 @@
     </section>
 
     <!-- Gallery Section -->
-    <section id="gallery" class="py-20 bg-white">
+    <section id="gallery" class="py-16 sm:py-20 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4">Abyss en action</h2>
-                <p class="text-xl text-blue-800 max-w-3xl mx-auto">
-                    Découvrez comment Abyss révolutionne l'expérience de plongée à travers le monde.
+            <div class="text-center mb-12 sm:mb-16">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4">Découvrez Abyss</h2>
+                <p class="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
+                    Design ergonomique, écran haute visibilité et interface intuitive même avec des gants.
                 </p>
             </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="rounded-xl overflow-hidden shadow-lg transform transition hover:scale-105">
-                    <img src="https://images.unsplash.com/photo-1530549387789-4c1017266635?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Plongeur avec Abyss" class="w-full h-64 object-cover">
-                    <div class="px-6 py-4 bg-white">
-                        <div class="font-bold text-xl mb-2">Exploration récifale</div>
-                        <p class="text-blue-800 text-base">
-                            Suivi précis de la navigation parmi les coraux avec affichage des points d'intérêt.
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                <div class="rounded-xl overflow-hidden shadow-lg">
+                    <img src="./ressources/img/affichage.jpg"
+                          alt="Abyss underwater"
+                          class="w-full h-48 sm:h-64 object-cover">
+                    <div class="bg-white p-4 sm:p-6">
+                        <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">Écran haute visibilité</h3>
+                        <p class="text-gray-600 text-sm sm:text-base">Lisible même en pleine lumière sous-marine avec contraste ajustable.</p>
+                    </div>
+                </div>
+                                
+                <div class="rounded-xl overflow-hidden shadow-lg">
+                    <img src="./ressources/img/btn.jpg"
+                          alt="Abyss interface"
+                          class="w-full h-48 sm:h-64 object-cover">
+                    <div class="bg-white p-4 sm:p-6">
+                        <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">Interface intuitive</h3>
+                        <p class="text-gray-600 text-sm sm:text-base">Navigation simplifiée avec des boutons larges pour une utilisation avec des gants.</p>
+                    </div>
+                </div>
+                                
+                <div class="rounded-xl overflow-hidden shadow-lg">
+                    <img src="./ressources/img/phone.webp"
+                          alt="Abyss with app"
+                          class="w-full h-48 sm:h-64 object-cover">
+                    <div class="bg-white p-4 sm:p-6">
+                        <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">Synchronisation sans fil</h3>
+                        <p class="text-gray-600 text-sm sm:text-base">Transfert automatique des données de plongée via Bluetooth vers votre smartphone.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-16 sm:py-20 bg-gray-50">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12 sm:mb-16">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4">Questions fréquentes</h2>
+                <p class="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
+                    Trouvez des réponses aux questions les plus courantes sur Abyss.
+                </p>
+            </div>
+
+            <div class="space-y-4 sm:space-y-6">
+                <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <button onclick="toggleFAQ(1)" class="w-full flex justify-between items-center p-4 sm:p-6 text-left">
+                        <h3 class="text-base sm:text-lg font-medium text-gray-900">Quelle est l'autonomie de la batterie ?</h3>
+                        <i id="faq-icon-1" class="fas fa-chevron-down text-blue-600 transition-transform duration-300 text-sm sm:text-base"></i>
+                    </button>
+                    <div id="faq-content-1" class="hidden px-4 sm:px-6 pb-4 sm:pb-6">
+                        <p class="text-gray-600 text-sm sm:text-base">
+                           Abyss fonctionne avec une batterie Li-ion 18650 de 3500 mAh offrant 3 à 5 heures d'autonomie en mode plongée continue selon l'utilisation. La batterie est facilement remplaçable.
                         </p>
                     </div>
                 </div>
-                
-                <div class="rounded-xl overflow-hidden shadow-lg transform transition hover:scale-105">
-                    <img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Abyss en profondeur" class="w-full h-64 object-cover">
-                    <div class="px-6 py-4 bg-white">
-                        <div class="font-bold text-xl mb-2">Plongée technique</div>
-                        <p class="text-blue-800 text-base">
-                            Gestion des mélanges gazeux et calcul des paliers de décompression en temps réel.
+
+                <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <button onclick="toggleFAQ(2)" class="w-full flex justify-between items-center p-4 sm:p-6 text-left">
+                        <h3 class="text-base sm:text-lg font-medium text-gray-900">Jusqu'à quelle profondeur puis-je plonger avec Abyss ?</h3>
+                        <i id="faq-icon-2" class="fas fa-chevron-down text-blue-600 transition-transform duration-300 text-sm sm:text-base"></i>
+                    </button>
+                    <div id="faq-content-2" class="hidden px-4 sm:px-6 pb-4 sm:pb-6">
+                        <p class="text-gray-600 text-sm sm:text-base">
+                            Le capteur MS5837 haute précision permet de plonger jusqu'à 290 mètres de profondeur (30 bar), couvrant tous les types de plongée loisir et technique avec une précision au centimètre.
                         </p>
                     </div>
                 </div>
-                
-                <div class="rounded-xl overflow-hidden shadow-lg transform transition hover:scale-105">
-                    <img src="https://images.unsplash.com/photo-1508009603885-50cf7c579365?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Abyss de nuit" class="w-full h-64 object-cover">
-                    <div class="px-6 py-4 bg-white">
-                        <div class="font-bold text-xl mb-2">Plongée nocturne</div>
-                        <p class="text-blue-800 text-base">
-                            Affichage rétroéclairé et mode nuit pour une expérience optimale dans l'obscurité.
+
+                <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <button onclick="toggleFAQ(3)" class="w-full flex justify-between items-center p-4 sm:p-6 text-left">
+                        <h3 class="text-base sm:text-lg font-medium text-gray-900">Comment fonctionne la synchronisation avec l'application mobile ?</h3>
+                        <i id="faq-icon-3" class="fas fa-chevron-down text-blue-600 transition-transform duration-300 text-sm sm:text-base"></i>
+                    </button>
+                    <div id="faq-content-3" class="hidden px-4 sm:px-6 pb-4 sm:pb-6">
+                        <p class="text-gray-600 text-sm sm:text-base">
+                           Abyss utilise le Bluetooth intégré du Raspberry Pi Zero 2 W pour se connecter automatiquement à l'application React Native. Les données sont ensuite synchronisées dans le cloud via une API sécurisée.
                         </p>
                     </div>
                 </div>
-            </div>
-            
-            <div class="mt-12 text-center">
-                <a href="#" class="inline-flex items-center px-6 py-3 border border-blue-600 text-blue-600 rounded-lg font-medium hover:bg-blue-50 transition">
-                    <i class="fas fa-images mr-2"></i> Voir toute la galerie
-                </a>
-            </div>
-        </div>
-    </section>
 
-    <!-- Testimonials Section -->
-    <section id="testimonials" class="py-20 bg-blue-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4">Ce que disent les plongeurs</h2>
-                <p class="text-xl text-blue-800 max-w-3xl mx-auto">
-                    Découvrez les témoignages de ceux qui ont déjà adopté Abyss pour leurs aventures sous-marines.
-                </p>
-            </div>
-            
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="bg-white p-8 rounded-xl shadow-sm">
-                    <div class="flex mb-4">
-                        <i class="fas fa-star text-yellow-400"></i>
-                        <i class="fas fa-star text-yellow-400"></i>
-                        <i class="fas fa-star text-yellow-400"></i>
-                        <i class="fas fa-star text-yellow-400"></i>
-                        <i class="fas fa-star text-yellow-400"></i>
-                    </div>
-                    <p class="text-blue-800 mb-6">
-                        "Abyss a complètement transformé ma façon de plonger. La précision des données et la facilité d'utilisation sont incomparables."
-                    </p>
-                    <div class="flex items-center">
-                        <img class="w-12 h-12 rounded-full mr-4" src="https://randomuser.me/api/portraits/women/32.jpg" alt="Sophie Martin">
-                        <div>
-                            <h4 class="font-bold">Sophie Martin</h4>
-                            <p class="text-sm text-blue-600">Instructrice PADI, 15 ans d'expérience</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bg-white p-8 rounded-xl shadow-sm">
-                    <div class="flex mb-4">
-                        <i class="fas fa-star text-yellow-400"></i>
-                        <i class="fas fa-star text-yellow-400"></i>
-                        <i class="fas fa-star text-yellow-400"></i>
-                        <i class="fas fa-star text-yellow-400"></i>
-                        <i class="fas fa-star text-yellow-400"></i>
-                    </div>
-                    <p class="text-blue-800 mb-6">
-                        "En tant que biologiste marin, j'apprécie particulièrement la précision des capteurs et la richesse des données enregistrées."
-                    </p>
-                    <div class="flex items-center">
-                        <img class="w-12 h-12 rounded-full mr-4" src="https://randomuser.me/api/portraits/men/54.jpg" alt="Thomas Leroy">
-                        <div>
-                            <h4 class="font-bold">Thomas Leroy</h4>
-                            <p class="text-sm text-blue-600">Biologiste marin, plongeur scientifique</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bg-white p-8 rounded-xl shadow-sm">
-                    <div class="flex mb-4">
-                        <i class="fas fa-star text-yellow-400"></i>
-                        <i class="fas fa-star text-yellow-400"></i>
-                        <i class="fas fa-star text-yellow-400"></i>
-                        <i class="fas fa-star text-yellow-400"></i>
-                        <i class="fas fa-star-half-alt text-yellow-400"></i>
-                    </div>
-                    <p class="text-blue-800 mb-6">
-                        "L'autonomie est impressionnante. J'ai pu l'utiliser pendant tout un voyage sans avoir à recharger."
-                    </p>
-                    <div class="flex items-center">
-                        <img class="w-12 h-12 rounded-full mr-4" src="https://randomuser.me/api/portraits/women/68.jpg" alt="Élodie Bernard">
-                        <div>
-                            <h4 class="font-bold">Élodie Bernard</h4>
-                            <p class="text-sm text-blue-600">Plongeuse professionnelle, photographe sous-marine</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Pricing Section -->
-    <section id="pricing" class="py-20 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4">Choisissez votre Abyss</h2>
-                <p class="text-xl text-blue-800 max-w-3xl mx-auto">
-                    Différentes options pour s'adapter à tous les types de plongeurs.
-                </p>
-            </div>
-            
-            <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                <div class="border border-blue-200 rounded-xl p-8 hover:border-blue-400 transition">
-                    <h3 class="text-2xl font-bold mb-2">Abyss Basic</h3>
-                    <p class="text-blue-600 mb-6">Parfait pour les débutants</p>
-                    <div class="mb-6">
-                        <span class="text-4xl font-bold">499€</span>
-                        <span class="text-blue-600 line-through ml-2">599€</span>
-                    </div>
-                    <ul class="space-y-3 mb-8">
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-500 mr-2"></i>
-                            <span>Profondeur max: 60m</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-500 mr-2"></i>
-                            <span>Batterie: 20h</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-500 mr-2"></i>
-                            <span>Connectivité Bluetooth</span>
-                        </li>
-                        <li class="flex items-center text-blue-400">
-                            <i class="fas fa-times mr-2"></i>
-                            <span>GPS intégré</span>
-                        </li>
-                        <li class="flex items-center text-blue-400">
-                            <i class="fas fa-times mr-2"></i>
-                            <span>Enregistrement des plongées</span>
-                        </li>
-                    </ul>
-                    <button class="w-full py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition">
-                        Choisir cette option
+                <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <button onclick="toggleFAQ(4)" class="w-full flex justify-between items-center p-4 sm:p-6 text-left">
+                        <h3 class="text-base sm:text-lg font-medium text-gray-900">Abyss est-il un projet commercial ?</h3>
+                        <i id="faq-icon-4" class="fas fa-chevron-down text-blue-600 transition-transform duration-300 text-sm sm:text-base"></i>
                     </button>
-                </div>
-                
-                <div class="border-2 border-blue-600 rounded-xl p-8 bg-blue-50 relative">
-                    <div class="absolute top-0 right-0 bg-blue-600 text-white px-3 py-1 text-sm font-bold rounded-bl-lg rounded-tr-lg">
-                        POPULAIRE
+                    <div id="faq-content-4" class="hidden px-4 sm:px-6 pb-4 sm:pb-6">
+                        <p class="text-gray-600 text-sm sm:text-base">
+                            Non, Abyss est un projet étudiant de 3 semaines développé par Arno Tribolet, Nathan Füllemann et Mathéo Lopez. L'objectif est de concevoir un ordinateur de plongée sécurisé en utilisant des technologies open-source modernes.
+                        </p>
                     </div>
-                    <h3 class="text-2xl font-bold mb-2">Abyss Pro</h3>
-                    <p class="text-blue-600 mb-6">Le choix des professionnels</p>
-                    <div class="mb-6">
-                        <span class="text-4xl font-bold">799€</span>
-                        <span class="text-blue-600 line-through ml-2">899€</span>
-                    </div>
-                    <ul class="space-y-3 mb-8">
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-500 mr-2"></i>
-                            <span>Profondeur max: 100m</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-500 mr-2"></i>
-                            <span>Batterie: 30h</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-500 mr-2"></i>
-                            <span>Connectivité Bluetooth/WiFi</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-500 mr-2"></i>
-                            <span>GPS intégré</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-500 mr-2"></i>
-                            <span>Enregistrement des plongées</span>
-                        </li>
-                    </ul>
-                    <button class="w-full py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition">
-                        Choisir cette option
-                    </button>
-                </div>
-                
-                <div class="border border-blue-200 rounded-xl p-8 hover:border-blue-400 transition">
-                    <h3 class="text-2xl font-bold mb-2">Abyss X</h3>
-                    <p class="text-blue-600 mb-6">Pour les plongeurs extrêmes</p>
-                    <div class="mb-6">
-                        <span class="text-4xl font-bold">1199€</span>
-                        <span class="text-blue-600 line-through ml-2">1399€</span>
-                    </div>
-                    <ul class="space-y-3 mb-8">
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-500 mr-2"></i>
-                            <span>Profondeur max: 150m</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-500 mr-2"></i>
-                            <span>Batterie: 40h</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-500 mr-2"></i>
-                            <span>Connectivité Bluetooth/WiFi</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-500 mr-2"></i>
-                            <span>GPS intégré + cartes</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check text-green-500 mr-2"></i>
-                            <span>Enregistrement vidéo intégré</span>
-                        </li>
-                    </ul>
-                    <button class="w-full py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition">
-                        Choisir cette option
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="py-20 bg-blue-900 text-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-3xl md:text-4xl font-bold mb-6">Prêt à explorer les profondeurs avec Abyss?</h2>
-            <p class="text-xl text-blue-200 max-w-3xl mx-auto mb-8">
-                Rejoignez la communauté de plongeurs qui ont fait confiance à Abyss pour leurs aventures sous-marines.
-            </p>
-            <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="#pricing" class="px-8 py-4 bg-white text-blue-900 rounded-lg font-bold hover:bg-blue-100 transition transform hover:scale-105">
-                    Acheter maintenant
-                </a>
-                <a href="#contact" class="px-8 py-4 border-2 border-white text-white rounded-lg font-bold hover:bg-blue-800 transition transform hover:scale-105">
-                    Nous contacter
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="py-20 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="md:grid md:grid-cols-2 md:gap-12 items-center">
-                <div class="mb-12 md:mb-0">
-                    <h2 class="text-3xl md:text-4xl font-bold mb-6">Des questions sur Abyss?</h2>
-                    <p class="text-lg text-blue-800 mb-8">
-                        Notre équipe est là pour répondre à toutes vos questions sur nos produits et vous aider à choisir l'Abyss qui correspond à vos besoins.
-                    </p>
-                    
-                    <div class="space-y-6">
-                        <div class="flex">
-                            <div class="flex-shrink-0">
-                                <div class="flex items-center justify-center h-12 w-12 rounded-md bg-blue-100 text-blue-600">
-                                    <i class="fas fa-phone"></i>
-                                </div>
-                            </div>
-                            <div class="ml-4">
-                                <h3 class="text-lg font-medium text-blue-900">Par téléphone</h3>
-                                <p class="mt-1 text-blue-800">
-                                    +33 1 23 45 67 89<br>
-                                    Du lundi au vendredi, 9h-18h
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <div class="flex">
-                            <div class="flex-shrink-0">
-                                <div class="flex items-center justify-center h-12 w-12 rounded-md bg-blue-100 text-blue-600">
-                                    <i class="fas fa-envelope"></i>
-                                </div>
-                            </div>
-                            <div class="ml-4">
-                                <h3 class="text-lg font-medium text-blue-900">Par email</h3>
-                                <p class="mt-1 text-blue-800">
-                                    contact@abyss-dive.com<br>
-                                    Réponse sous 24h
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <div class="flex">
-                            <div class="flex-shrink-0">
-                                <div class="flex items-center justify-center h-12 w-12 rounded-md bg-blue-100 text-blue-600">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                </div>
-                            </div>
-                            <div class="ml-4">
-                                <h3 class="text-lg font-medium text-blue-900">En personne</h3>
-                                <p class="mt-1 text-blue-800">
-                                    12 Rue de l'Océan<br>
-                                    75006 Paris, France
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-blue-50 rounded-xl p-8 shadow-sm">
-                    <h3 class="text-xl font-bold mb-6">Envoyez-nous un message</h3>
-                    <form>
-                        <div class="mb-4">
-                            <label for="name" class="block text-sm font-medium text-blue-800 mb-1">Nom complet</label>
-                            <input type="text" id="name" class="w-full px-4 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-                        <div class="mb-4">
-                            <label for="email" class="block text-sm font-medium text-blue-800 mb-1">Email</label>
-                            <input type="email" id="email" class="w-full px-4 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-                        <div class="mb-4">
-                            <label for="subject" class="block text-sm font-medium text-blue-800 mb-1">Sujet</label>
-                            <select id="subject" class="w-full px-4 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                <option>Demande d'information</option>
-                                <option>Support technique</option>
-                                <option>Retour produit</option>
-                                <option>Autre</option>
-                            </select>
-                        </div>
-                        <div class="mb-6">
-                            <label for="message" class="block text-sm font-medium text-blue-800 mb-1">Message</label>
-                            <textarea id="message" rows="4" class="w-full px-4 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
-                        </div>
-                        <button type="submit" class="w-full py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition">
-                            Envoyer le message
-                        </button>
-                    </form>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-blue-900 text-white pt-16 pb-8">
+    <footer class="bg-gray-900 text-white pt-12 sm:pt-16 pb-6 sm:pb-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
-                <div>
-                    <h3 class="text-lg font-bold mb-4">Produits</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-blue-300 hover:text-white transition">Abyss Basic</a></li>
-                        <li><a href="#" class="text-blue-300 hover:text-white transition">Abyss Pro</a></li>
-                        <li><a href="#" class="text-blue-300 hover:text-white transition">Abyss X</a></li>
-                        <li><a href="#" class="text-blue-300 hover:text-white transition">Accessoires</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="text-lg font-bold mb-4">Support</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-blue-300 hover:text-white transition">Centre d'aide</a></li>
-                        <li><a href="#" class="text-blue-300 hover:text-white transition">Manuels</a></li>
-                        <li><a href="#" class="text-blue-300 hover:text-white transition">FAQ</a></li>
-                        <li><a href="#" class="text-blue-300 hover:text-white transition">Garantie</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="text-lg font-bold mb-4">Entreprise</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-blue-300 hover:text-white transition">À propos</a></li>
-                        <li><a href="#" class="text-blue-300 hover:text-white transition">Carrières</a></li>
-                        <li><a href="#" class="text-blue-300 hover:text-white transition">Blog</a></li>
-                        <li><a href="#" class="text-blue-300 hover:text-white transition">Presse</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="text-lg font-bold mb-4">Légal</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-blue-300 hover:text-white transition">Confidentialité</a></li>
-                        <li><a href="#" class="text-blue-300 hover:text-white transition">Conditions</a></li>
-                        <li><a href="#" class="text-blue-300 hover:text-white transition">Cookies</a></li>
-                        <li><a href="#" class="text-blue-300 hover:text-white transition">Mentions légales</a></li>
-                    </ul>
-                </div>
-            </div>
             
-            <div class="border-t border-blue-800 pt-8">
-                <div class="md:flex md:items-center md:justify-between">
-                    <div class="flex justify-center md:order-2 space-x-6 mb-6 md:mb-0">
-                        <a href="#" class="text-blue-300 hover:text-white transition">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="text-blue-300 hover:text-white transition">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" class="text-blue-300 hover:text-white transition">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="text-blue-300 hover:text-white transition">
-                            <i class="fab fa-youtube"></i>
-                        </a>
+                        
+            <div class="border-t border-gray-800 pt-6 sm:pt-8">
+                <div class="flex flex-col sm:flex-row justify-between items-center">
+                    <div class="flex items-center mb-3 sm:mb-0">
+                        <img src="./ressources/img/ABYSS_logo.png" alt="Abyss Logo" srcset="">
                     </div>
-                    <div class="text-center md:text-left">
-                        <p class="text-blue-300">
-                            &copy; 2023 Abyss Dive Technologies. Tous droits réservés.
-                        </p>
+                    <div class="flex space-x-4 sm:space-x-6 mb-3 sm:mb-0">
+                       <p>Fullann - Nathan Füllemann</p>
+                       <p>MathLopez - Matheo Lopez</p>
+                       <p>arnoheigvd - Arno Tribolet</p>
                     </div>
                 </div>
             </div>
         </div>
     </footer>
-
-    <script>
-        // Simple animation for demo purposes
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
-            });
-        });
-        
-        // Mobile menu toggle would go here
-    </script>
+    <script src="./ressources/js/script.js"></script>
 </body>
 </html>

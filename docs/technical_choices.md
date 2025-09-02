@@ -126,7 +126,7 @@ L'ordinateur Abyss fonctionne de manière totalement autonome :
 ## Phase 2 : Calcul des statistiques finales
 À la fin de la plongée, l'ordinateur :
 
-- Calcule les statistiques complètes (profondeur moyenne, consommation d'air, etc.)
+- Calcule les statistiques complètes (profondeur moyenne, etc.)
 - Génère le résumé de plongée avec tous les événements
 - Prépare les données pour la synchronisation
 
@@ -154,3 +154,62 @@ L'application mobile synchronise avec le cloud :
 - Synchronisation multi-appareils possible
 
 # Workflow
+ Le workflow se partage en 2 parties. Le firmware et l'application mobile.
+ 
+## CI/CD Firmware
+
+Le déploiement est automatisé via GitHub Actions et se déclenche :
+
+- **Sur push vers `main`** : Déploiement complet
+- **Sur push vers `feature/**`** : Tests uniquement
+- **Uniquement si les fichiers dans `firmware/`** sont modifiés
+
+### Pipeline CI/CD
+
+1. **Tests et Qualité** :
+   - Vérification du formatage avec Black
+   - Linting avec Flake8
+   - Exécution des tests avec Pytest
+
+2. **Build et Déploiement** (uniquement sur `main`) :
+   - Téléchargement des dépendances pour ARM (Raspberry Pi)
+   - Construction du package wheel
+   - Création de l'archive de déploiement
+   - Upload via FTP vers le serveur
+
+3. **Déploiement sur le Raspberry**
+   -  À ce stade, le déploiement se fait manuellement. À terme, il sera géré par l'application. 
+
+## CI/CD Application mobile
+
+Le déploiement est entièrement automatisé via GitHub Actions :
+
+### Déclenchement
+- **Push sur `main`** : Build et déploiement complet
+- **Push sur `feature/**`** : Tests et validation uniquement
+- **Condition** : Modifications dans le dossier `app/`
+
+### Étapes du Pipeline
+
+#### 1. **Tests & Qualité** (sur toutes les branches)
+```yaml
+- Installation des dépendances Node.js
+- Linting avec ESLint
+- Exécution des tests unitaires Jest
+```
+
+#### 2. **Build Android** (uniquement sur `main`)
+```yaml
+- Setup Node.js LTS + Java JDK 17
+- Installation des dépendances
+- Build APK de production (./gradlew assembleRelease)
+- Déploiement automatique via FTP
+```
+#### 3. **Déploiement sur Android**
+   -  À ce stade, le déploiement se fait manuellement. À terme, il sera géré par l'application.
+
+### Variables d'environnement du pipeline
+```yaml
+NODE_VERSION: 'lts/*'    # Version Node.js LTS
+W_DIRECTORY: './app'     # Répertoire de travail
+```

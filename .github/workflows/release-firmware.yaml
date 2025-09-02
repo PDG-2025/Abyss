@@ -1,0 +1,90 @@
+name: Release Firmware
+
+on:
+  push:
+    branches: [ main, feature/**]
+    paths: ["firmware/**"]
+
+env:
+  W_DIRECTORY: './firmware'
+  V_PYTHON: '3.11'
+
+jobs:
+  tests:
+    name: Formatting and Testing
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.W_DIRECTORY }}
+    
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.V_PYTHON }}
+      
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      
+      - name: Check formatting
+        run: black --check --diff src/ tests/
+        continue-on-error: true
+      
+      - name: Lint
+        run: |
+          flake8 src/ tests/ --count --select=E9,F63,F7,F82 --show-source --statistics # Critical
+          flake8 src/ tests/ --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics  # Not Critical
+      
+      - name: Testing
+        run: |
+          pytest tests/ -v --tb=short
+
+  deploy-firmware:
+    name: Build and Deploy the App
+    runs-on: ubuntu-latest
+    needs: tests
+    if: github.ref == 'refs/heads/main'        
+    defaults:
+      run:
+        working-directory: ${{ env.W_DIRECTORY }}
+    
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.V_PYTHON }}
+      
+      - name: Prepare Build and Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build wheel
+          pip download -d deployment-package/wheels/ \
+            --platform linux_armv7l \
+            --platform linux_aarch64 \
+            --only-binary=:all: \
+            -r requirements.txt
+      
+      - name: Build and Package
+        run: |
+          python -m build
+          cp dist/*.whl deployment-package/
+          chmod +x deployment-package/install.sh
+          mkdir release && tar -czf release/Abyss-firmware.tar.gz deployment-package/
+      
+      - name: Deploy to Server
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ftp.sc2qina3877.universe.wf
+          username: abyss@sc2qina3877.universe.wf
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 21
+          local-dir: ${{ env.W_DIRECTORY }}/release/
+          server-dir: /firmware/
