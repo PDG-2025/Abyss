@@ -1,4 +1,4 @@
-from display.template.template_screen import TemplateScreen, FT_SMALL, FT_BIG
+from display.screens.template_screen import TemplateScreen, FT_SMALL, FT_BIG
 
 class GazScreen(TemplateScreen):
     def __init__(self):

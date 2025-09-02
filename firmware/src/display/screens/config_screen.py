@@ -1,11 +1,11 @@
-from display.template.template_screen import TemplateScreen, FT_SMALL, FT_BIG
+from display.screens.template_screen import TemplateScreen, FT_SMALL, FT_BIG
 
 class ConfigScreen(TemplateScreen):
     def __init__(self):
         super().__init__()
         # Initiate Indicators
         self.add_field("ind_title", 5, 5, FT_SMALL)
-        self.modify_field("ind_title", "Prochaine Plongée")
+        self.modify_field("ind_title", "Paramètres")
 
         self.add_field("ind_gaz", 100, 100, FT_SMALL)
         self.modify_field("ind_gaz", "Gaz:")

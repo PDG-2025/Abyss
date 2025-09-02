@@ -1,4 +1,4 @@
-from display.template.template_screen import TemplateScreen, FT_SMALL, FT_BIG
+from display.screens.template_screen import TemplateScreen, FT_SMALL, FT_BIG
 
 class StatusScreen(TemplateScreen):
     def __init__(self):

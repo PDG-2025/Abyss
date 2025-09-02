@@ -1,7 +1,6 @@
-from display.template.template_screen import TemplateScreen, FT_SMALL, FT_BIG
+from display.screens.template_screen import TemplateScreen, FT_SMALL, FT_BIG
 
-
-class GeneralScreen(TemplateScreen):
+class PalierScreen(TemplateScreen):
     def __init__(self):
         super().__init__()
         # Initiate Indicators
@@ -19,15 +18,15 @@ class GeneralScreen(TemplateScreen):
         self.add_field("ind_updown", 370, 134, FT_SMALL)
         self.modify_field("ind_updown", "m/min")
 
-        self.add_field("ind_temp", 155, 190, FT_SMALL)
-        self.modify_field("ind_temp", "C°")
-        self.add_field("ind_mod", 245, 190, FT_SMALL)
-        self.modify_field("ind_mod", "MOD (m):")
+        self.add_field("ind_palier", 60, 190, FT_SMALL)
+        self.modify_field("ind_palier", "Palier:")
+        self.add_field("ind_palier_unit", 150, 235, FT_SMALL)
+        self.modify_field("ind_palier_unit", "m")
 
-        self.add_field("ind_palier", 95, 235, FT_SMALL)
-        self.modify_field("ind_palier", "Prochain palier:")
-        self.add_field("ind_palier_m", 335, 235, FT_SMALL)
-        self.modify_field("ind_palier_m", "m")
+        self.add_field("ind_palier_time", 270, 190, FT_SMALL)
+        self.modify_field("ind_palier_time", "Temps restant:")
+        self.add_field("ind_palier_time_unit",  330,235, FT_SMALL)
+        self.modify_field("ind_palier_time_unit", "MIN")
 
         self.add_field("ind_timer", 95, 280, FT_SMALL)
         self.modify_field("ind_timer", "Durée plongée:")
@@ -41,35 +40,19 @@ class GeneralScreen(TemplateScreen):
         self.add_field("val_depth", 170, 95, FT_BIG)
         self.add_field("val_updown", 320, 95, FT_BIG) # ↑ ↓
 
-        self.add_field("val_temp", 100, 190, FT_SMALL)
-        self.add_field("val_mod", 360, 190, FT_SMALL)
+        self.add_field("val_palier", 60, 220, FT_BIG)
 
-        self.add_field("val_palier", 290, 235, FT_SMALL)
+        self.add_field("val_palier_time", 270, 220, FT_BIG)
 
         self.add_field("val_timer", 290, 280, FT_SMALL)
 
 
-
-
-
-
-
-
-
-
-
     def update(self):
         '''
-        Need to update:
-        - time
-        - battery
+        add update:
         - pressure
-        - ndl
+        - time left
+        - palier
         - depth
         - updown
-        - temp
-        - mod
-        - palier
-        - timer
         '''
-        return "Not implemented yet"
