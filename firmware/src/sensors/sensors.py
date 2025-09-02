@@ -1,10 +1,13 @@
-import time, math, smbus2, ms5837, json
+import time, math, smbus2, ms5837, json, threading
 from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
 
 
 LOG_FILE = "logs/mesures.json"
+QMC5883L_BUS = 1
 QMC5883L_ADDR = 0x0D
+QMC5883L_REGISTER = 0x09
+QMC5883L_VALUE = 0b00011101
 
 
 def init_ms5837():
@@ -17,8 +20,8 @@ def init_ms5837():
 
 def init_qmc5883l():
     # --- QMC5883L (boussole) ---
-    bus = smbus2.SMBus(1)
-    bus.write_byte_data(QMC5883L_ADDR, 0x09, 0b00011101)  # config
+    bus = smbus2.SMBus(QMC5883L_BUS)
+    bus.write_byte_data(QMC5883L_ADDR, QMC5883L_REGISTER, QMC5883L_VALUE)  # config
     return bus
 
 
@@ -28,6 +31,9 @@ class SensorsManager:
         self.qmc5883l = init_qmc5883l()
         self.x_offset = None
         self.y_offset = None
+        self.stop = True
+        self.thread = threading.Thread(target=self.job)
+
 
     def read_raw_qmc5883l(self):
         data = self.qmc5883l.read_i2c_block_data(QMC5883L_ADDR, 0x00, 6)
@@ -91,7 +97,7 @@ class SensorsManager:
         return heading
 
     def job(self):
-        while True:
+        while not self.stop:
             if self.ms5837.read():
                 temp = self.ms5837.temperature()
                 press = self.ms5837.pressure()
@@ -102,3 +108,20 @@ class SensorsManager:
             heading = self.read_heading()
             self.log_measurement(temp, press, depth, heading)
             time.sleep(0.2)
+
+    def start(self):
+        try:
+            self.stop = False
+            self.thread.start()
+        except:
+            return False
+        return True
+
+    def stop(self):
+        try:
+            self.stop = True
+            self.thread.join()
+        except:
+            return False
+        return True
+

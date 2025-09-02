@@ -1,5 +1,5 @@
 '''
-This files come from https://github.com/bluerobotics/ms5837-python
+This file come from https://github.com/bluerobotics/ms5837-python
 Downloaded on 02/09/2025
 '''
 
