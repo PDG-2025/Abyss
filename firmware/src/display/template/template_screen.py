@@ -7,7 +7,7 @@ except:
     FT_BIG = ImageFont.load_default()
     FT_SMALL = ImageFont.load_default()
 
-class ImageTemplate:
+class TemplateScreen:
     def __init__(self):
         self.width = 480
         self.height = 320

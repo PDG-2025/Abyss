@@ -1,6 +1,6 @@
-from display.template.image_template import ImageTemplate, FT_SMALL, FT_BIG
+from display.template.template_screen import TemplateScreen, FT_SMALL, FT_BIG
 
-class GazScreen(ImageTemplate):
+class GazScreen(TemplateScreen):
     def __init__(self):
         super().__init__()
         # Initiate Indicators
