@@ -12,7 +12,9 @@ dependencies = [
     "Pillow",
     "numpy",
     "RPi.GPIO",
-    "spidev"]
+    "spidev",
+    "smbus2"
+]
 requires-python = ">=3.8"
 
 [project.optional-dependencies]
