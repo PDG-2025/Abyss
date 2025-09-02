@@ -30,3 +30,12 @@ class StatusScreen(ImageTemplate):
 
         self.add_field("val_ble", 320, 230, FT_SMALL)
 
+    def update(self):
+        '''
+        Need to update:
+        - battery
+        - cpress status
+        - compas status
+        - ble status
+        '''
+
