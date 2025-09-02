@@ -11,7 +11,7 @@ class ImageTemplate:
     def __init__(self):
         self.width = 480
         self.height = 320
-        self.template_path = "template/png/fond.png"
+        self.background = "#d3d3d3"
         self.fields = {}
 
     def add_field(self, name, x, y, font):
@@ -24,7 +24,7 @@ class ImageTemplate:
         self.fields[name]['value'] = value
 
     def generate_image(self):
-        img = Image.open(self.template_path)
+        img = Image.new("RGB", (self.width, self.height), self.background)
         draw = ImageDraw.Draw(img)
 
         for field, info in self.fields.items():
