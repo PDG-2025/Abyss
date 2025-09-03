@@ -1,24 +1,17 @@
 import time
+
+from button.buttons import ButtonManager
+from display.display_manager import DisplayManager
 from sensors.sensors import SensorsManager
 
 def main():
-    print("first")
-    sensors = SensorsManager()
-    
-    print("cal")
-    sensors.calibrate_qmc5883l()
+    while True:
+        dm = DisplayManager()
+        bm = ButtonManager()
 
-    print(sensors.is_calibrated())
+        dm.start()
+        bm.start()
 
-    print("start")
-    sensors.start()
 
-    print("sleep")
-    time.sleep(10)
-    sensors.stop()
-
-    print("Job over")
-
-    return True
-
-main()
+if __name__ == "__main__":
+    main()
