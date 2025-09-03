@@ -38,12 +38,45 @@ export default function LoginScreen() {
 
   const submit = async () => {
     setError(null);
+
+    const e = email.trim().toLowerCase();
+    const p = pwd;
+
+    if (!e || !p) {
+      setError("Email et mot de passe requis");
+      return;
+    }
+
     try {
-      await login(email.trim().toLowerCase(), pwd);
-    } catch (e: any) {
-      setError(e?.response?.data?.error || "Erreur de connexion");
+      await login(e, p);
+      // navigation éventuelle post-login ici
+    } catch (err: any) {
+      const resp = err?.response; // peut être undefined si offline/CORS/etc.
+      if (!resp) {
+        setError("Réseau indisponible");
+        return;
+      }
+      const { status, data } = resp;
+
+      // Zod 400 avec details.flatten()
+      const fieldErrors = data?.details?.fieldErrors as
+        | Record<string, string[]>
+        | undefined;
+      if (status === 400 && fieldErrors) {
+        const msgs = Object.values(fieldErrors).flat().filter(Boolean);
+        setError(msgs.join("\n") || data?.error || "Erreur de validation");
+        return;
+      }
+
+      if (status === 401) {
+        setError(data?.error || "Identifiants invalides");
+        return;
+      }
+
+      setError(data?.error || "Erreur de connexion");
     }
   };
+
   const inputPwd = {
     borderWidth: 1,
     borderColor: palette.border,
@@ -54,7 +87,6 @@ export default function LoginScreen() {
     paddingHorizontal: 14,
     marginBottom: 12,
   } as const;
-
 
   const Btn = ({
     title,
@@ -120,6 +152,8 @@ export default function LoginScreen() {
         autoCorrect={false}
         textContentType="password"
         importantForAutofill="yes"
+        value={pwd}
+        onChangeText={setPwd}
         style={inputPwd}
       />
 

@@ -40,3 +40,11 @@ export async function getLocationsBulk(ids: number[]) {
     throw extractApiError(e);
   }
 }
+export async function updateLocation(location_id: number, data: Partial<LocationItem>) {
+  try {
+    const res = await api.patch(`/locations/${location_id}`, data);
+    return res.data as LocationItem;
+  } catch (e) {
+    throw extractApiError(e);
+  }
+}

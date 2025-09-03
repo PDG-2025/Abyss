@@ -29,6 +29,18 @@ export async function getWeather(dive_id: number) {
   }
 }
 
+export async function updateWeather(
+  dive_id: number,
+  body: Partial<Omit<WeatherDTO, 'weather_id' | 'dive_id'>>
+) {
+  try {
+    const res = await api.put(`/weather/dives/${dive_id}/weather`, body);
+    return res.data as WeatherDTO;
+  } catch (e) {
+    throw extractApiError(e);
+  }
+}
+
 export async function deleteWeather(dive_id: number) {
   try {
     await api.delete(`/weather/dives/${dive_id}/weather`);

@@ -17,6 +17,7 @@ import {
   useTheme,
 } from "@react-navigation/native";
 import { getDive, updateDive } from "../../services/dives";
+import { getLocation, updateLocation } from "../../services/locations";
 
 type RootStackParamList = { EditDiveInfo: { dive_id: number } };
 
@@ -51,30 +52,34 @@ export default function EditDiveInfoScreen() {
   const [duration, setDuration] = useState<string>(""); // minutes
   const [depthMax, setDepthMax] = useState<string>(""); // m
   const [avgDepth, setAvgDepth] = useState<string>(""); // m
-  const [notes, setNotes] = useState<string>(""); // NOTE ajoutée
+  const [notes, setNotes] = useState<string>("");
 
   useEffect(() => {
     (async () => {
       try {
         setLoading(true);
-        const d = await getDive(dive_id); // GET /dives/:id [11]
+        const d = await getDive(dive_id);
         setDive(d);
         setTitle(d?.title ?? "");
         setDateIso(d?.date ?? "");
-        setLocationName(d?.location_name ?? "");
-        setLat(d?.latitude != null ? String(d.latitude) : "");
-        setLng(d?.longitude != null ? String(d.longitude) : "");
-        setDuration(d?.duration != null ? String(d.duration) : "");
-        setDepthMax(d?.depth_max != null ? String(d.depth_max) : "");
-        setAvgDepth(d?.average_depth != null ? String(d.average_depth) : "");
-        setNotes(d?.notes ?? ""); // charger la note
+        setDuration(d?.duration?.toString() ?? "");
+        setDepthMax(d?.depth_max?.toString() ?? "");
+        setAvgDepth(d?.average_depth?.toString() ?? "");
+        setNotes(d?.notes ?? "");
+
+        if (d?.location_id) {
+          const loc = await getLocation(d.location_id);
+          setLocationName(loc.name ?? "");
+          setLat(loc.latitude?.toString() ?? "");
+          setLng(loc.longitude?.toString() ?? "");
+        }
       } catch (e: any) {
-        Alert.alert("Infos", e?.message || "Chargement impossible");
+        Alert.alert("Erreur", e.message || "Chargement impossible");
       } finally {
         setLoading(false);
       }
     })();
-  }, [dive_id]); // [11]
+  }, [dive_id]);
 
   const validate = () => {
     const num = (s: string) => (s === "" ? null : Number(s));
@@ -95,52 +100,52 @@ export default function EditDiveInfoScreen() {
     const err = validate();
     if (err) return Alert.alert("Validation", err);
 
-    const diff: any = {};
-    const assign = (key: string, v: any, current: any) => {
-      const normalized = v === "" ? null : v;
-      if (normalized !== current) diff[key] = normalized;
-    };
-
-    assign("title", title.trim(), dive?.title ?? null);
-    assign("date", dateIso || null, dive?.date ?? null);
-    assign(
-      "location_name",
-      locationName.trim() || null,
-      dive?.location_name ?? null
-    );
-    assign("latitude", lat === "" ? null : Number(lat), dive?.latitude ?? null);
-    assign(
-      "longitude",
-      lng === "" ? null : Number(lng),
-      dive?.longitude ?? null
-    );
-    assign(
-      "duration",
-      duration === "" ? null : Number(duration),
-      dive?.duration ?? null
-    );
-    assign(
-      "depth_max",
-      depthMax === "" ? null : Number(depthMax),
-      dive?.depth_max ?? null
-    );
-    assign(
-      "average_depth",
-      avgDepth === "" ? null : Number(avgDepth),
-      dive?.average_depth ?? null
-    );
-    assign("notes", notes.trim() || null, dive?.notes ?? null); // inclure la note
-
-    if (Object.keys(diff).length === 0)
-      return Alert.alert("Infos", "Aucun changement");
-
     try {
-      const updated = await updateDive(dive_id, diff); // PATCH /dives/:id [11]
-      setDive(updated);
-      Alert.alert("Infos", "Mise à jour réussie");
+      // 1) Mise à jour plongée
+      const diveDiff: any = {};
+      const assign = (key: string, v: any, current: any) => {
+        const normalized = v === "" ? null : v;
+        if (normalized !== current) diveDiff[key] = normalized;
+      };
+
+      assign("date", dateIso || null, dive?.date ?? null);
+      assign(
+        "duration",
+        duration === "" ? null : Number(duration),
+        dive?.duration ?? null
+      );
+      assign(
+        "depth_max",
+        depthMax === "" ? null : Number(depthMax),
+        dive?.depth_max ?? null
+      );
+      assign(
+        "average_depth",
+        avgDepth === "" ? null : Number(avgDepth),
+        dive?.average_depth ?? null
+      );
+      assign("notes", notes.trim() || null, dive?.notes ?? null);
+
+      if (Object.keys(diveDiff).length > 0) {
+        await updateDive(dive_id, diveDiff);
+      }
+
+      // 2) Mise à jour lieu
+      if (dive?.location_id) {
+        const locDiff: any = {};
+        if (locationName !== "") locDiff.name = locationName;
+        if (lat !== "") locDiff.latitude = Number(lat);
+        if (lng !== "") locDiff.longitude = Number(lng);
+
+        if (Object.keys(locDiff).length > 0) {
+          await updateLocation(dive.location_id, locDiff);
+        }
+      }
+
+      Alert.alert("Succès", "Mise à jour réussie");
       navigation.goBack();
     } catch (e: any) {
-      Alert.alert("Erreur", e?.message || "Échec de la mise à jour");
+      Alert.alert("Erreur", e.message || "Échec de la mise à jour");
     }
   };
 
@@ -188,17 +193,8 @@ export default function EditDiveInfoScreen() {
           Infos générales
         </Text>
 
-        <Text style={{ color: palette.sub, marginBottom: 4 }}>Titre</Text>
-        <TextInput
-          value={title}
-          onChangeText={setTitle}
-          placeholder="Titre"
-          placeholderTextColor={palette.hint}
-          style={inputStyle}
-        />
-
         <Text style={{ color: palette.sub, marginBottom: 4 }}>
-          Date (ISO 8601)
+          Date
         </Text>
         <TextInput
           value={dateIso}

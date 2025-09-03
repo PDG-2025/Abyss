@@ -9,6 +9,7 @@ import {
   Image,
   Dimensions,
 } from "react-native";
+import MapView, { Marker } from "react-native-maps";
 import {
   useRoute,
   useNavigation,
@@ -114,7 +115,7 @@ export default function DiveDetailScreen() {
       </View>
     );
   }
-
+  const hasCoordinates = dive?.latitude != null && dive?.longitude != null;
   return (
     <ScrollView
       style={{ flex: 1, backgroundColor: palette.bg }}
@@ -155,8 +156,6 @@ export default function DiveDetailScreen() {
           />
         </View>
       </View>{" "}
-      {/* [13][14] */}
-      {/* Titre d’écran (header affiche déjà le titre, mais on garde local pour correspondre au mock) */}
       <Text
         style={{
           color: palette.text,
@@ -165,7 +164,7 @@ export default function DiveDetailScreen() {
           marginBottom: 12,
         }}
       >
-        {dive?.title || "—"}
+        {dive?.location_name || "Pas de lieu"}
       </Text>
       {/* Statistiques */}
       <Text
@@ -257,9 +256,6 @@ export default function DiveDetailScreen() {
       >
         {dive?.depth_max ?? 0} m
       </Text>
-      <Text style={{ color: palette.sub, marginBottom: 8 }}>
-        {chart.durationMin} min
-      </Text>
       {chart.depthSeries.length ? (
         <View
           style={{
@@ -311,6 +307,39 @@ export default function DiveDetailScreen() {
         <Text style={{ color: palette.sub }}>
           Pas encore de mesures pour tracer la courbe.
         </Text>
+      )}
+      {/* Carte */}
+      {hasCoordinates && (
+        <>
+          <Text
+            style={{
+              color: palette.text,
+              fontSize: 18,
+              fontWeight: "700",
+              marginTop: 20,
+              marginBottom: 8,
+            }}
+          >
+            Localisation
+          </Text>
+          <MapView
+            style={{ width: "100%", height: 200, borderRadius: 12 }}
+            initialRegion={{
+              latitude: dive.latitude,
+              longitude: dive.longitude,
+              latitudeDelta: 0.01,
+              longitudeDelta: 0.01,
+            }}
+          >
+            <Marker
+              coordinate={{
+                latitude: dive.latitude,
+                longitude: dive.longitude,
+              }}
+              title={dive.location_name || "Plongée"}
+            />
+          </MapView>
+        </>
       )}
       {/* Notes (lecture seule si vide) */}
       <Text

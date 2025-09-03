@@ -1,12 +1,31 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, TextInput, Button, Alert, ScrollView, ActivityIndicator } from 'react-native';
-import { useRoute, RouteProp, useNavigation, useTheme } from '@react-navigation/native';
-import { getWeather, upsertWeather, deleteWeather } from '../../services/weather';
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  Alert,
+  ScrollView,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
+import {
+  useRoute,
+  RouteProp,
+  useNavigation,
+  useTheme,
+} from "@react-navigation/native";
+import {
+  getWeather,
+  updateWeather,
+  deleteWeather,
+} from "../../services/weather";
 
 type Params = { EditWeather: { dive_id: number } };
 
 export default function EditWeatherScreen() {
-  const route = useRoute<RouteProp<Params, 'EditWeather'>>();
+  const route = useRoute<RouteProp<Params, "EditWeather">>();
   const navigation = useNavigation<any>();
   const { colors, dark } = useTheme();
   const dive_id = route.params.dive_id;
@@ -16,71 +35,125 @@ export default function EditWeatherScreen() {
       bg: colors.background,
       card: colors.card,
       text: colors.text,
-      sub: dark ? '#96A2AE' : '#475569',
+      sub: dark ? "#96A2AE" : "#475569",
       border: colors.border,
-      hint: dark ? '#6B7280' : '#94A3B8',
-      danger: dark ? '#F87171' : '#B91C1C',
+      hint: dark ? "#6B7280" : "#94A3B8",
+      danger: dark ? "#F87171" : "#B91C1C",
     }),
     [colors, dark]
   );
 
-  const [surface_temperature, setSurfaceTemperature] = useState<string>('');
-  const [wind_speed, setWindSpeed] = useState<string>('');
-  const [wave_height, setWaveHeight] = useState<string>('');
-  const [visibility_surface, setVisibilitySurface] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
+  const [weather, setWeather] = useState<any | null>(null);
+
+  // états formulaire
+  const [surfaceTemperature, setSurfaceTemperature] = useState("");
+  const [windSpeed, setWindSpeed] = useState("");
+  const [waveHeight, setWaveHeight] = useState("");
+  const [visibilitySurface, setVisibilitySurface] = useState("");
+  const [description, setDescription] = useState("");
 
   useEffect(() => {
     (async () => {
       try {
         setLoading(true);
-        const w = await getWeather(dive_id); // GET /dives/:id/weather
+        const w = await getWeather(dive_id);
         if (w) {
-          setSurfaceTemperature(w.surface_temperature != null ? String(w.surface_temperature) : '');
-          setWindSpeed(w.wind_speed != null ? String(w.wind_speed) : '');
-          setWaveHeight(w.wave_height != null ? String(w.wave_height) : '');
-          setVisibilitySurface(w.visibility_surface != null ? String(w.visibility_surface) : '');
-          setDescription(w.description ?? '');
+          setWeather(w);
+          console.log(w.surface_temperature);
+          setSurfaceTemperature(
+            w.surface_temperature != null ? String(w.surface_temperature) : ""
+          );
+          setWindSpeed(w.wind_speed != null ? String(w.wind_speed) : "");
+          setWaveHeight(w.wave_height != null ? String(w.wave_height) : "");
+          setVisibilitySurface(
+            w.visibility_surface != null ? String(w.visibility_surface) : ""
+          );
+          setDescription(w.description ?? "");
         } else {
-          setSurfaceTemperature('');
-          setWindSpeed('');
-          setWaveHeight('');
-          setVisibilitySurface('');
-          setDescription('');
+          setWeather(null);
+          setSurfaceTemperature("");
+          setWindSpeed("");
+          setWaveHeight("");
+          setVisibilitySurface("");
+          setDescription("");
         }
       } catch (e: any) {
-        Alert.alert('Météo', e?.message || 'Erreur de chargement');
+        Alert.alert("Météo", e?.message || "Erreur de chargement");
       } finally {
         setLoading(false);
       }
     })();
-  }, [dive_id]); // [11]
+  }, [dive_id]);
+
+  const validate = () => {
+    const num = (s: string) => (s === "" ? null : Number(s));
+    const temp = num(surfaceTemperature);
+    const wind = num(windSpeed);
+    const wave = num(waveHeight);
+    const vis = num(visibilitySurface);
+    if (temp != null && (Number.isNaN(temp) || temp < -50 || temp > 60))
+      return "Température invalide";
+    if (wind != null && (Number.isNaN(wind) || wind < 0))
+      return "Vitesse du vent invalide";
+    if (wave != null && (Number.isNaN(wave) || wave < 0))
+      return "Hauteur de vague invalide";
+    if (vis != null && (Number.isNaN(vis) || vis < 0))
+      return "Visibilité invalide";
+    return null;
+  };
 
   const onSave = async () => {
+    const err = validate();
+    if (err) return Alert.alert("Validation", err);
+
+    const diff: any = {};
+    const assign = (key: string, value: any, current: any) => {
+      const normalized = value === "" ? null : Number(value) || value;
+      if (normalized !== current) diff[key] = normalized;
+    };
+
+    assign(
+      "surface_temperature",
+      surfaceTemperature,
+      weather?.surface_temperature
+    );
+    
+    assign("wind_speed", windSpeed, weather?.wind_speed);
+    assign("wave_height", waveHeight, weather?.wave_height);
+    assign(
+      "visibility_surface",
+      visibilitySurface,
+      weather?.visibility_surface
+    );
+    assign("description", description, weather?.description);
+
+    if (Object.keys(diff).length === 0)
+      return Alert.alert("Infos", "Aucun changement");
+
     try {
-      const payload = {
-        surface_temperature: surface_temperature !== '' ? Number(surface_temperature) : null,
-        wind_speed: wind_speed !== '' ? Number(wind_speed) : null,
-        wave_height: wave_height !== '' ? Number(wave_height) : null,
-        visibility_surface: visibility_surface !== '' ? Number(visibility_surface) : null,
-        description: description || null,
-      };
-      await upsertWeather(dive_id, payload); // PUT /dives/:id/weather [11]
-      Alert.alert('Météo', 'Enregistré');
+      const updated = await updateWeather(dive_id, diff);
+      setWeather(updated);
+      Alert.alert("Succès", "Météo mise à jour");
       navigation.goBack();
     } catch (e: any) {
-      Alert.alert('Météo', e?.message || 'Erreur de sauvegarde');
+      Alert.alert("Erreur", e?.message || "Échec de la mise à jour");
     }
   };
 
   const onDelete = async () => {
     try {
-      await deleteWeather(dive_id); // DELETE /dives/:id/weather [11]
-      Alert.alert('Météo', 'Supprimé');
+      await deleteWeather(dive_id);
+      setWeather(null);
+      setSurfaceTemperature("");
+      setWindSpeed("");
+      setWaveHeight("");
+      setVisibilitySurface("");
+      setDescription("");
+      Alert.alert("Météo", "Supprimée");
       navigation.goBack();
     } catch (e: any) {
-      Alert.alert('Météo', e?.message || 'Erreur suppression');
+      Alert.alert("Erreur", e?.message || "Échec de la suppression");
     }
   };
 
@@ -96,70 +169,101 @@ export default function EditWeatherScreen() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, backgroundColor: palette.bg, justifyContent: 'center' }}>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: palette.bg,
+          justifyContent: "center",
+        }}
+      >
         <ActivityIndicator />
       </View>
     );
   }
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: palette.bg }} contentContainerStyle={{ padding: 16, paddingBottom: 24 }} keyboardShouldPersistTaps="handled">
-      <Text style={{ color: palette.text, fontSize: 18, fontWeight: '700', marginBottom: 12 }}>Météo</Text>
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: palette.bg }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ padding: 16, paddingBottom: 24 }}
+        keyboardShouldPersistTaps="handled"
+      >
+        <Text
+          style={{
+            color: palette.text,
+            fontSize: 18,
+            fontWeight: "700",
+            marginBottom: 12,
+          }}
+        >
+          Météo
+        </Text>
 
-      <Text style={{ color: palette.sub, marginBottom: 4 }}>Température surface (°C)</Text>
-      <TextInput
-        value={surface_temperature}
-        onChangeText={setSurfaceTemperature}
-        keyboardType="numeric"
-        placeholder="22"
-        placeholderTextColor={palette.hint}
-        style={inputStyle}
-      />
+        <Text style={{ color: palette.sub, marginBottom: 4 }}>
+          Température surface (°C)
+        </Text>
+        <TextInput
+          value={surfaceTemperature}
+          onChangeText={setSurfaceTemperature}
+          keyboardType="numeric"
+          placeholder="22"
+          placeholderTextColor={palette.hint}
+          style={inputStyle}
+        />
 
-      <Text style={{ color: palette.sub, marginBottom: 4 }}>Vent (m/s)</Text>
-      <TextInput
-        value={wind_speed}
-        onChangeText={setWindSpeed}
-        keyboardType="numeric"
-        placeholder="5"
-        placeholderTextColor={palette.hint}
-        style={inputStyle}
-      />
+        <Text style={{ color: palette.sub, marginBottom: 4 }}>Vent (m/s)</Text>
+        <TextInput
+          value={windSpeed}
+          onChangeText={setWindSpeed}
+          keyboardType="numeric"
+          placeholder="5"
+          placeholderTextColor={palette.hint}
+          style={inputStyle}
+        />
 
-      <Text style={{ color: palette.sub, marginBottom: 4 }}>Hauteur de vague (m)</Text>
-      <TextInput
-        value={wave_height}
-        onChangeText={setWaveHeight}
-        keyboardType="numeric"
-        placeholder="0.6"
-        placeholderTextColor={palette.hint}
-        style={inputStyle}
-      />
+        <Text style={{ color: palette.sub, marginBottom: 4 }}>
+          Hauteur de vague (m)
+        </Text>
+        <TextInput
+          value={waveHeight}
+          onChangeText={setWaveHeight}
+          keyboardType="numeric"
+          placeholder="0.6"
+          placeholderTextColor={palette.hint}
+          style={inputStyle}
+        />
 
-      <Text style={{ color: palette.sub, marginBottom: 4 }}>Visibilité surface (m)</Text>
-      <TextInput
-        value={visibility_surface}
-        onChangeText={setVisibilitySurface}
-        keyboardType="numeric"
-        placeholder="15"
-        placeholderTextColor={palette.hint}
-        style={inputStyle}
-      />
+        <Text style={{ color: palette.sub, marginBottom: 4 }}>
+          Visibilité surface (m)
+        </Text>
+        <TextInput
+          value={visibilitySurface}
+          onChangeText={setVisibilitySurface}
+          keyboardType="numeric"
+          placeholder="15"
+          placeholderTextColor={palette.hint}
+          style={inputStyle}
+        />
 
-      <Text style={{ color: palette.sub, marginBottom: 4 }}>Description</Text>
-      <TextInput
-        value={description}
-        onChangeText={setDescription}
-        multiline
-        placeholder="Mer calme, ciel dégagé…"
-        placeholderTextColor={palette.hint}
-        style={[inputStyle, { height: 90 }]}
-      />
+        <Text style={{ color: palette.sub, marginBottom: 4 }}>Description</Text>
+        <TextInput
+          value={description}
+          onChangeText={setDescription}
+          multiline
+          textAlignVertical="top"
+          placeholder="Mer calme, ciel dégagé…"
+          placeholderTextColor={palette.hint}
+          style={[inputStyle, { minHeight: 90 }]}
+        />
 
-      <View style={{ height: 12 }} />
-      <Button title="Enregistrer" onPress={onSave} color={colors.primary} />
-      <View style={{ height: 8 }} />
-      <Button title="Supprimer" color={palette.danger} onPress={onDelete} />
-    </ScrollView>
+        <View style={{ height: 12 }} />
+        <Button title="Enregistrer" onPress={onSave} color={colors.primary} />
+        <View style={{ height: 8 }} />
+        <Button title="Supprimer" color={palette.danger} onPress={onDelete} />
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }

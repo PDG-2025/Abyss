@@ -75,7 +75,7 @@ export default function WelcomeScreen() {
             marginBottom: 8,
           }}
         >
-          Welcome to DiveTrack!
+          Welcome to Abyss diving!
         </Text>
         <Text style={{ color: palette.sub, lineHeight: 20, marginBottom: 16 }}>
           Track your dives, explore dive sites, and connect with fellow divers.
