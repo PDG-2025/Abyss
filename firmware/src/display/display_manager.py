@@ -1,22 +1,27 @@
-import time
-import st7789
+import time, st7789, threading
 from PIL import Image, ImageDraw, ImageFont
 from display.screens.general_screen import GeneralScreen
 from display.screens.config_screen import ConfigScreen
 from display.screens.palier_screen import PalierScreen
 from display.screens.gaz_screen import GazScreen
 from display.screens.status_screen import StatusScreen
+from enum import Enum
 
-def image_to_rgb565(img):
-    """Convertit une image PIL RGB en bytes RGB565"""
-    arr = bytearray()
-    for r, g, b in img.getdata():
-        rgb = ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3)
-        arr.append((rgb >> 8) & 0xFF)
-        arr.append(rgb & 0xFF)
-    return bytes(arr)
-
+CONFIG_PHASE = 0
+DIVE_PHASE = 1
 FBDEV = "/dev/fb1"
+
+
+class CONFIG_SCREEN(Enum):
+    WELCOME = None
+    CONFIG = 0,
+    STATUS = 1,
+    GAZ = 2,
+
+class DIVE_SCREEN(Enum):
+    GENERAL = 0,
+    PALIER = 1,
+    COMPASS = 2
 
 def init_display():
     try:
@@ -26,7 +31,27 @@ def init_display():
         print(f"Impossible d'ouvrir {FBDEV}, mode simulation")
         return None
 
+
+class DisplayManager:
+    def __init__(self):
+        self.current_screen = CONFIG_SCREEN.WELCOME
+        self.phase = CONFIG_PHASE
+        self.display = init_display()
+
+
+    def image_to_rgb565(img):
+        """Convertit une image PIL RGB en bytes RGB565"""
+        arr = bytearray()
+        for r, g, b in img.getdata():
+            rgb = ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3)
+            arr.append((rgb >> 8) & 0xFF)
+            arr.append(rgb & 0xFF)
+        return bytes(arr)
+
+
+
 def update_display(fb):
+
 
 
     screen = GeneralScreen()
@@ -47,7 +72,7 @@ def update_display(fb):
     img.show()
 
 
-    '''
+
     screen = ConfigScreen()
 
     screen.modify_field("val_gaz", "NITROX")
@@ -58,7 +83,7 @@ def update_display(fb):
     img = screen.generate_image()
 
     img.show()
-    '''
+
 
     screen = PalierScreen()
 
@@ -76,7 +101,7 @@ def update_display(fb):
 
     img.show()
 
-    '''
+
     screen = GazScreen()
 
     screen.modify_field("val_mod", "000")
@@ -84,8 +109,8 @@ def update_display(fb):
     img = screen.generate_image()
 
     img.show()
-    '''
-    '''
+
+
     screen = StatusScreen()
 
     screen.modify_field("val_battery", "00%")
@@ -96,7 +121,7 @@ def update_display(fb):
     img = screen.generate_image()
 
     img.show()
-    '''
+
 
     # envoyer vers framebuffer
     #fb.seek(0)

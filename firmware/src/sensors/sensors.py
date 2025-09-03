@@ -44,6 +44,13 @@ class SensorsManager:
             'azimuth': None
         }
 
+    def get_data(self):
+        with self.sensors_data_lock:
+            return [self.sensors_data['temp'],
+                    self.sensors_data['press'],
+                    self.sensors_data['depth'],
+                    self.sensors_data['azimuth']
+                    ]
 
     def read_raw_qmc5883l(self):
         data = self.qmc5883l.read_i2c_block_data(QMC5883L_ADDR, 0x00, 6)
@@ -87,13 +94,14 @@ class SensorsManager:
 
     def log_measurement(self):
         """Stocke une mesure dans un fichier JSON avec un horodatage"""
-        data = {
-            "timestamp": datetime.utcnow().isoformat() + "Z",  # temps UTC format ISO 8601
-            "temperature_c": self.sensors_data['temp'],
-            "pression_mbar": self.sensors_data['press'],
-            "profondeur_m": self.sensors_data['depth'],
-            "azimut_deg": self.sensors_data['azimut']
-        }
+        with self.sensors_data_lock:
+            data = {
+                "timestamp": datetime.utcnow().isoformat() + "Z",  # temps UTC format ISO 8601
+                "temperature_c": self.sensors_data['temp'],
+                "pression_mbar": self.sensors_data['press'],
+                "profondeur_m": self.sensors_data['depth'],
+                "azimut_deg": self.sensors_data['azimut']
+            }
         # lire l’ancien contenu
         try:
             with open(LOG_FILE, "r") as f:
@@ -143,7 +151,3 @@ class SensorsManager:
         except:
             return False
         return True
-
-    def get_screen_data(self, screen_config):
-        if screen_config is None:
-            return False
