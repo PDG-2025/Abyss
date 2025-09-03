@@ -1,9 +1,8 @@
 import time, math, smbus2, ms5837, json, threading
 from datetime import datetime
-from PIL import Image, ImageDraw, ImageFont
 
 
-LOG_FILE = "mesures.json"
+LOG_FILE = "logs/mesures.json"
 QMC5883L_BUS = 1
 QMC5883L_ADDR = 0x0D
 QMC5883L_REGISTER = 0x09
@@ -15,13 +14,17 @@ def init_ms5837():
     sensor = ms5837.MS5837_30BA()
     if not sensor.init():
         print("Erreur : MS5837 non détecté")
-        exit(1)
+        return None
     return sensor
 
 def init_qmc5883l():
     # --- QMC5883L (boussole) ---
-    bus = smbus2.SMBus(QMC5883L_BUS)
-    bus.write_byte_data(QMC5883L_ADDR, QMC5883L_REGISTER, QMC5883L_VALUE)  # config
+    try:
+        bus = smbus2.SMBus(QMC5883L_BUS)
+        bus.write_byte_data(QMC5883L_ADDR, QMC5883L_REGISTER, QMC5883L_VALUE)  # config
+    except:
+        print("Erreur : qmc5883l non détecté")
+        return None
     return bus
 
 
@@ -33,6 +36,13 @@ class SensorsManager:
         self.y_offset = None
         self.stop_thread = True
         self.thread = threading.Thread(target=self.job)
+        self.sensors_data_lock = threading.Lock()
+        self.sensors_data = {
+            'temp': None,
+            'press': None,
+            'depth': None,
+            'azimuth': None
+        }
 
 
     def read_raw_qmc5883l(self):
@@ -64,14 +74,25 @@ class SensorsManager:
     def is_calibrated(self):
         return self.x_offset is not None and self.y_offset is not None
 
-    def log_measurement(self, temp, press, depth, azimuth):
+    def check_ms5837(self):
+        if self.ms5837 is None:
+            return False
+        return True
+
+    def check_qmc5883l(self):
+        if self.qmc5883l is None:
+            return False
+        return True
+
+
+    def log_measurement(self):
         """Stocke une mesure dans un fichier JSON avec un horodatage"""
         data = {
             "timestamp": datetime.utcnow().isoformat() + "Z",  # temps UTC format ISO 8601
-            "temperature_c": temp,
-            "pression_mbar": press,
-            "profondeur_m": depth,
-            "azimut_deg": azimuth
+            "temperature_c": self.sensors_data['temp'],
+            "pression_mbar": self.sensors_data['press'],
+            "profondeur_m": self.sensors_data['depth'],
+            "azimut_deg": self.sensors_data['azimut']
         }
         # lire l’ancien contenu
         try:
@@ -98,16 +119,13 @@ class SensorsManager:
 
     def job(self):
         while not self.stop_thread:
-            if self.ms5837.read():
-                temp = self.ms5837.temperature()
-                press = self.ms5837.pressure()
-                depth = self.ms5837.depth()
-            else:
-                temp, press, depth = 0, 0, 0
-
-            heading = self.read_heading()
-            self.log_measurement(temp, press, depth, heading)
-            print(f"Temp: {temp:.2f} °C | Pression: {press:.2f} mbar | Profondeur: {depth:.2f} m | Azimut: {heading:.2f} °")
+            with self.sensors_data_lock:
+                self.sensors_data['azimut'] = self.read_heading()
+                if self.ms5837.read():
+                    self.sensors_data['temp'] = self.ms5837.temperature()
+                    self.sensors_data['press'] = self.ms5837.pressure()
+                    self.sensors_data['depth'] = self.ms5837.depth()
+                    self.log_measurement()
             time.sleep(0.2)
 
     def start(self):
@@ -126,3 +144,6 @@ class SensorsManager:
             return False
         return True
 
+    def get_screen_data(self, screen_config):
+        if screen_config is None:
+            return False
