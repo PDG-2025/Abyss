@@ -1,4 +1,3 @@
-from enum import Enum
 import RPi.GPIO as GPIO
 import time, threading
 from display.display_manager import DisplayManager
@@ -15,23 +14,28 @@ class ButtonManager:
         """Fonction déclenchée quand un bouton est pressé"""
         if channel == 5:
             print("Bouton sur GPIO 5 appuyé → Action 1")
+            self.display.press_enter()
             # mets ton action ici
         elif channel == 6:
             print("Bouton sur GPIO 6 appuyé → Action 2")
+            self.display.press_down()
 
         elif channel == 13:
             print("Bouton sur GPIO 13 appuyé → Action 3")
+            self.display.press_up()
 
         elif channel == 26:
             print("Bouton sur GPIO 26 appuyé → Action 4")
+            self.display.press_back()
 
     def job(self):
         # Configuration GPIO
         GPIO.setmode(GPIO.BCM)  # mode BCM (numéros GPIO, pas les numéros physiques)
-        GPIO.setup(BUTTON_PINS, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+        GPIO.setup(self.PINS, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
         # Détection des événements
-        for pin in BUTTON_PINS:
-            GPIO.add_event_detect(pin, GPIO.RISING, callback=action, bouncetime=300)
+        for pin in self.PINS:
+            GPIO.remove_event_detect(pin)
+            GPIO.add_event_detect(pin, GPIO.RISING, callback=self.action, bouncetime=300)
 
         while not self.stop_thread:
             time.sleep(0.1)

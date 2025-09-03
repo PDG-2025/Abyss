@@ -37,7 +37,7 @@ class ConfigScreen(TemplateScreen):
         # Initiate Values
         self.add_field("val_gaz", 230, 60, FT_SMALL)
         self.modify_field("val_gaz", self.gaz.value)
-        self.add_field("val_gaz_perc", 300, 60, FT_SMALL)
+        self.add_field("val_gaz_perc", 340, 60, FT_SMALL)
         self.modify_field("val_gaz_perc", str(self.gaz_p)+'%')
         self.add_field("val_alarme", 230, 110, FT_SMALL)
         self.modify_field("val_alarme", self.alarm.value)
@@ -56,14 +56,16 @@ class ConfigScreen(TemplateScreen):
             self.phase = PHASE.SELECT_O_GAZ
         elif self.phase == PHASE.SELECT_O_COMPAS:
             self.phase = PHASE.SELECT_O_ALARME
-        self.phase = self.phase.previous()
+        else:
+            self.phase = self.phase.previous()
 
     def down_phase(self):
         if self.phase == PHASE.SELECT_O_ALARME:
             self.phase = PHASE.SELECT_O_COMPAS
         elif self.phase == PHASE.SELECT_O_GAZ:
             self.phase = PHASE.SELECT_O_ALARME
-        self.phase = self.phase.next()
+        else:
+            self.phase = self.phase.next()
 
     def set_gaz(self):
         if self.gaz == CONF_OPT.AIR:
@@ -90,23 +92,22 @@ class ConfigScreen(TemplateScreen):
         else:
             self.alarm = self.alarm.next()
 
-
+    def update_info(self):
+        self.modify_field("val_gaz", self.gaz.value)
+        self.modify_field("val_gaz_perc", str(self.gaz_p)+'%')
+        self.modify_field("val_alarme", self.alarm.value)
+        self.modify_field("val_compas", self.compas.value)
+        self.modify_field("val_ble", self.ble.value)
+        self.modifiy_x_y("selector", self.phase.value)
 
     def update(self, button):
-        '''
-        Need to update:
-        - gaz
-        - gaz_perc
-        - alarme
-        - compas
-        '''
         match button:
             case BUTTON.BACK_BUTTON:
                 if (self.phase is PHASE.SELECT_GAZ_PER or
                     self.phase is PHASE.SELECT_ALARME or
                     self.phase is PHASE.SELECT_GAZ
                 ):
-                    self.phase.previous()
+                    self.phase = self.phase.previous()
 
             case BUTTON.UP_BUTTON:
                 match self.phase:
@@ -147,16 +148,15 @@ class ConfigScreen(TemplateScreen):
                 match self.phase:
                     case (
                         PHASE.SELECT_O_GAZ |
-                        PHASE.SELECT_GAZ |
+                        PHASE.SELECT_GAZ_PER |
+                        PHASE.SELECT_ALARME |
                         PHASE.SELECT_O_ALARME
                     ):
-                        self.phase.next()
-                    case (
-                        PHASE.SELECT_GAZ |
-                        PHASE.SELECT_GAZ_PER |
-                        PHASE.SELECT_ALARME
-                    ):
-                        self.phase.next()
+                        self.phase = self.phase.next()
+                    case PHASE.SELECT_GAZ:
+                        self.phase = self.phase.next()
+                        if self.gaz == CONF_OPT.AIR:
+                            self.phase = self.phase.next()
                     case PHASE.SELECT_O_COMPAS:
                         self.compas = CONF_OPT.CMP_CL
                         return CONF_OPT.CMP_CL

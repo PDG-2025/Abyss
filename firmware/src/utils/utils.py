@@ -4,7 +4,7 @@ from enum import Enum
 class PHASE(Enum):
     SELECT_O_GAZ = (80,60)
     SELECT_GAZ = (210,60)
-    SELECT_GAZ_PER = (280,60)
+    SELECT_GAZ_PER = (320,60)
     SELECT_O_ALARME = (80, 110)
     SELECT_ALARME = (210, 110)
     SELECT_O_COMPAS = (80, 160)
@@ -32,7 +32,7 @@ class CONF_OPT(Enum):
     CMP_CL = "Calibration ..."
     CMP_NOT = "Non-calibré"
     BLE_OK = "Connecté"
-    BLE_CN = "Tourner l'appareil"
+    BLE_CN = "Connexion ... "
     BLE_NOT = "Déconnecté"
 
     def next(self):

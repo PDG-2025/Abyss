@@ -1,4 +1,4 @@
-import time, st7789, threading
+import time, threading
 from PIL import Image, ImageDraw, ImageFont
 from PIL.ImageChops import screen
 from display.screens.general_screen import GeneralScreen
@@ -75,6 +75,7 @@ class DisplayManager:
 
     def update_display(self):
         with self.screen_lock:
+            self.screen.update_info()
             img = self.screen.generate_image()
             img.show()
         # envoyer vers framebuffer

@@ -1,6 +1,6 @@
-import time, math, smbus2, ms5837, json, threading
+import time, math, smbus2, json, threading
 from datetime import datetime
-
+import ms5837
 
 LOG_FILE = "logs/mesures.json"
 QMC5883L_BUS = 1
