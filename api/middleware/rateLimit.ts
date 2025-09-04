@@ -1,6 +1,7 @@
 import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 import type { Request, Response } from 'express';
 
+const limit = 15 * 60 * 1000000;
 // Générateur de clé : user_id si connecté, sinon IP sécurisée IPv6
 const keyGenerator = (req: Request): string => {
   const userId = (req as any).user?.user_id;
@@ -20,7 +21,7 @@ const handler = (_req: Request, res: Response) => {
 
 // Limiteurs
 export const limiterGlobal = rateLimit({
-  windowMs: 15 * 60 * 1000,
+  windowMs: limit,
   max: 100,
   standardHeaders: true,
   legacyHeaders: false,
@@ -29,7 +30,7 @@ export const limiterGlobal = rateLimit({
 });
 
 export const limiterAuth = rateLimit({
-  windowMs: 15 * 60 * 1000,
+  windowMs: limit,
   max: 10,
   standardHeaders: true,
   legacyHeaders: false,
@@ -38,7 +39,7 @@ export const limiterAuth = rateLimit({
 });
 
 export const limiterSync = rateLimit({
-  windowMs: 15 * 60 * 1000,
+  windowMs: limit,
   max: 30,
   standardHeaders: true,
   legacyHeaders: false,

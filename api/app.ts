@@ -12,7 +12,7 @@ import authRoutes from './routes/auth';
 import userRoutes from './routes/users';
 import deviceRoutes from './routes/devices';
 import diveRoutes from './routes/dives';
-import measurementRoutes from './routes/measurements';
+import { measurementsBulkRouter, divesMeasurementsRouter } from './routes/measurements';
 import alertRoutes from './routes/alerts';
 import compassRoutes from './routes/compass';
 import mediaRoutes from './routes/media';
@@ -22,6 +22,8 @@ import gasRoutes from './routes/gas';
 import locationRoutes from './routes/locations';
 import surfaceRoutes from './routes/surfaceIntervals';
 import syncRoutes from './routes/sync';
+import firmwareRoutes from './routes/firmware';
+import devicesFirmwareRoutes from './routes/devicesFirmware';
 
 const app = express();
 
@@ -61,7 +63,8 @@ app.use('/sync', limiterSync, syncRoutes);
 app.use('/users', userRoutes);
 app.use('/devices', deviceRoutes);
 app.use('/dives', diveRoutes);
-app.use('/measurements', measurementRoutes);
+app.use('/measurements', measurementsBulkRouter); 
+app.use('/dives', divesMeasurementsRouter);
 app.use('/alerts', alertRoutes);
 app.use('/compass', compassRoutes);
 app.use('/media', mediaRoutes);
@@ -70,6 +73,8 @@ app.use('/equipment', equipmentRoutes);
 app.use('/gas', gasRoutes);
 app.use('/locations', locationRoutes);
 app.use('/surface-intervals', surfaceRoutes);
+app.use('/firmware', firmwareRoutes);
+app.use('/devices', devicesFirmwareRoutes);
 
 // Gestionnaire d’erreurs global
 app.use(errorHandler);
