@@ -6,7 +6,6 @@ import {
   Alert,
   ActivityIndicator,
   FlatList,
-  TouchableOpacity,
 } from "react-native";
 import Slider from "@react-native-community/slider";
 import { useTheme } from "@react-navigation/native";
@@ -35,14 +34,10 @@ export default function DevicesScreen() {
 
   const [devices, setDevices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-
-  const [connected, setConnected] = useState<any>(null);
-  const [battery, setBattery] = useState<number | null>(80);
   const [nearbyOpen, setNearbyOpen] = useState(false);
   const [nearby, setNearby] = useState<Nearby[]>([]);
   const [loadingScan, setLoadingScan] = useState(false);
-  const [loadingCard, setLoadingCard] = useState(false);
-  const [progress, setProgress] = useState(0);
+
   const linkRef = useRef<AbyssLink | null>(null);
 
   /** Récupère les devices enregistrés côté serveur */
@@ -50,7 +45,7 @@ export default function DevicesScreen() {
     try {
       setLoading(true);
       const devs = await listDevices();
-      setDevices(devs);
+      setDevices(devs.map((d) => ({ ...d, progress: 0, busy: false })));
     } catch (e: any) {
       Alert.alert("Appareils", e?.message || "Erreur chargement");
     } finally {
@@ -68,7 +63,7 @@ export default function DevicesScreen() {
     };
   }, []);
 
-  /** Scan et appairage BLE */
+  /** Scan BLE pour appairage */
   const openPair = async () => {
     const ok = await requestBlePermissionsIfNeeded();
     if (!ok) return Alert.alert("Bluetooth", "Permissions refusées");
@@ -81,7 +76,10 @@ export default function DevicesScreen() {
         if (!id) return false;
         const exists = nearby.find((x) => x.id === id);
         if (exists) return false;
-        setNearby((prev) => [...prev, { id, name: d.name || "Appareil BLE", rssi: d.rssi }]);
+        setNearby((prev) => [
+          ...prev,
+          { id, name: d.name || "Appareil BLE", rssi: d.rssi },
+        ]);
         return true;
       }, 8000);
     } catch (e: any) {
@@ -91,15 +89,14 @@ export default function DevicesScreen() {
     }
   };
 
+  /** Connecte et enregistre device côté serveur */
   const connectTo = async (dev: Nearby) => {
     try {
-      setLoadingCard(true);
-      await ble.connectById(dev.id);
+      // on peut bloquer tout bouton sur l'ensemble de l'écran ou seulement la tuile
       const link = new AbyssLink();
       linkRef.current = link;
+      await ble.connectById(dev.id);
       const info = await link.handshake();
-      setConnected({ model: info.model, serial: info.serial, firmware: info.firmware });
-      // Enregistre côté serveur si pas déjà existant
       const list = await listDevices();
       if (!list.find((d: any) => d.serial_number === info.serial)) {
         await createDevice({
@@ -107,20 +104,22 @@ export default function DevicesScreen() {
           model: info.model,
           firmware_version: info.firmware,
         });
-        fetchDevices();
       }
+      fetchDevices();
       setNearbyOpen(false);
       Alert.alert("Appairage", `${info.model} connecté`);
     } catch (e: any) {
       Alert.alert("Appairage", e?.message || "Échec");
-    } finally {
-      setLoadingCard(false);
     }
   };
 
-  const sync = async () => {
-    if (!ble.device) return Alert.alert("Synchronisation", "Aucun appareil connecté");
+  /** Synchronisation BLE */
+  const sync = async (devIndex: number) => {
+    const dev = devices[devIndex];
     try {
+      updateDevice(devIndex, { busy: true });
+      if (!ble.device)
+        return Alert.alert("Synchronisation", "Aucun appareil connecté");
       const link = new AbyssLink();
       linkRef.current = link;
       const session = await link.getSession();
@@ -137,10 +136,51 @@ export default function DevicesScreen() {
       Alert.alert("Synchronisation", `Plongée synchronisée #${r.dive_id}`);
     } catch (e: any) {
       Alert.alert("Synchronisation", e?.message || "Échec");
+    } finally {
+      updateDevice(devIndex, { busy: false });
     }
   };
 
-  const renderDevice = ({ item }: { item: any }) => {
+  /** Mise à jour firmware OTA */
+  const updateFw = async (devIndex: number) => {
+    const dev = devices[devIndex];
+    try {
+      updateDevice(devIndex, { busy: true, progress: 0 });
+      if (!ble.device)
+        return Alert.alert("Firmware", "Aucun appareil connecté");
+      const link = new AbyssLink();
+      linkRef.current = link;
+      const info = await link.handshake();
+      const latest = await fetchLatestFirmware(info.model);
+      if (!isNewer(latest.version, info.firmware))
+        return Alert.alert("Firmware", `Déjà à jour (${info.firmware})`);
+      const bytes = await downloadFirmwareBytes(latest.url);
+      await otaUpdate(bytes, latest.version, {
+        chunkSize: 180,
+        opTimeoutMs: 15000,
+        maxRetries: 5,
+        onProgress: (o, t) => updateDevice(devIndex, { progress: o / t }),
+      });
+      Alert.alert("Mise à jour", "Terminée. L’appareil peut redémarrer.");
+      fetchDevices();
+    } catch (e: any) {
+      Alert.alert("Mise à jour", e?.message || "Échec");
+    } finally {
+      updateDevice(devIndex, { busy: false, progress: 0 });
+    }
+  };
+
+  /** Met à jour un device dans le state */
+  const updateDevice = (index: number, update: Partial<any>) => {
+    setDevices((prev) => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], ...update };
+      return copy;
+    });
+  };
+
+  /** Rendu d’une tuile device avec boutons BLE */
+  const renderDevice = ({ item, index }: { item: any; index: number }) => {
     const batteryLevel = item.battery ?? 80;
     return (
       <View
@@ -156,13 +196,19 @@ export default function DevicesScreen() {
         <Text style={{ color: palette.text, fontWeight: "700", fontSize: 16 }}>
           {item.model}
         </Text>
-        <Text style={{ color: palette.sub, marginBottom: 8 }}>
-          S/N: {item.serial_number}
-        </Text>
+        <Text style={{ color: palette.sub }}>S/N: {item.serial_number}</Text>
         <Text style={{ color: palette.text, marginBottom: 8 }}>
           Firmware: {item.firmware_version}
         </Text>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 8,
+            marginBottom: 12,
+          }}
+        >
           <Slider
             style={{ flex: 1 }}
             value={(batteryLevel ?? 0) / 100}
@@ -175,13 +221,54 @@ export default function DevicesScreen() {
           />
           <Text style={{ color: palette.text }}>{batteryLevel ?? 0}%</Text>
         </View>
+
+        {item.progress > 0 && item.progress < 1 && (
+          <View
+            style={{
+              width: "100%",
+              height: 8,
+              borderRadius: 6,
+              backgroundColor: dark ? "#223042" : "#E2E8F0",
+              marginBottom: 8,
+            }}
+          >
+            <View
+              style={{
+                width: `${Math.round(item.progress * 100)}%`,
+                height: 8,
+                borderRadius: 6,
+                backgroundColor: palette.accent,
+              }}
+            />
+          </View>
+        )}
+
+        <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap" }}>
+          <Button title="Appairer" onPress={openPair} disabled={item.busy} />
+          <Button
+            title="Synchroniser"
+            onPress={() => sync(index)}
+            disabled={item.busy}
+          />
+          <Button
+            title="Mise à jour firmware"
+            onPress={() => updateFw(index)}
+            disabled={item.busy}
+          />
+        </View>
       </View>
     );
   };
 
   if (loading) {
     return (
-      <View style={{ flex: 1, backgroundColor: palette.bg, justifyContent: "center" }}>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: palette.bg,
+          justifyContent: "center",
+        }}
+      >
         <ActivityIndicator />
       </View>
     );
@@ -189,12 +276,6 @@ export default function DevicesScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: palette.bg, padding: 16 }}>
-
-      {/* Actions BLE */}
-      <View style={{ flexDirection: "row", gap: 12, marginBottom: 16, flexWrap: "wrap" }}>
-        <Button title="Appairer un appareil" onPress={openPair} />
-        <Button title="Synchroniser" onPress={sync} disabled={!connected} />
-      </View>
 
       {devices.length === 0 ? (
         <View style={{ alignItems: "center", marginTop: 40 }}>
@@ -213,4 +294,32 @@ export default function DevicesScreen() {
       )}
     </View>
   );
+}
+
+/** Helpers firmware */
+async function fetchLatestFirmware(model: string) {
+  const res = await fetch(
+    `${
+      process.env.EXPO_PUBLIC_API_BASE
+    }/firmware/latest?model=${encodeURIComponent(model)}`
+  );
+  if (!res.ok) throw new Error("Firmware latest error");
+  return res.json();
+}
+async function downloadFirmwareBytes(url: string) {
+  const r = await fetch(url);
+  if (!r.ok) throw new Error("Download firmware failed");
+  const ab = await r.arrayBuffer();
+  return new Uint8Array(ab);
+}
+function isNewer(a: string, b: string) {
+  const A = a.split(".").map(Number);
+  const B = b.split(".").map(Number);
+  for (let i = 0; i < Math.max(A.length, B.length); i++) {
+    const ai = A[i] || 0,
+      bi = B[i] || 0;
+    if (ai > bi) return true;
+    if (ai < bi) return false;
+  }
+  return false;
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -8,37 +8,35 @@ import {
   ActivityIndicator,
   Image,
   Dimensions,
-} from "react-native";
-import MapView, { Marker } from "react-native-maps";
-import {
-  useRoute,
-  useNavigation,
-  RouteProp,
-  useTheme,
-} from "@react-navigation/native";
-import { LineChart } from "react-native-chart-kit";
-import { getDive, listMeasurements } from "../../services/dives";
-import { listMedia } from "../../services/media";
-import { getWeather } from "../../services/weather";
-import { getEquipment } from "../../services/equipment";
+} from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
+import { useRoute, useNavigation, RouteProp, useTheme } from '@react-navigation/native';
+import { LineChart } from 'react-native-chart-kit';
+import { getDive, listMeasurements } from '../../services/dives';
+import { listMedia } from '../../services/media';
+import { getWeather } from '../../services/weather';
+import { getEquipment } from '../../services/equipment';
+import { listAlerts } from '../../services/alerts';
+import { listDecompressionStops } from '../../services/decompressionStops';
+import { getGas } from '../../services/gas';
 
 type RootStackParamList = { DiveDetail: { dive_id: number } };
 
 export default function DiveDetailScreen() {
-  const route = useRoute<RouteProp<RootStackParamList, "DiveDetail">>();
-  const dive_id = route.params?.dive_id;
+  const route = useRoute<RouteProp<RootStackParamList, 'DiveDetail'>>();
+  const dive_id = route.params.dive_id;
   const navigation = useNavigation<any>();
-  const rootNav = navigation.getParent?.("RootStack");
+  const rootNav = navigation.getParent?.('RootStack');
   const { colors, dark } = useTheme();
 
   const palette = {
     bg: colors.background,
     card: colors.card,
     text: colors.text,
-    sub: dark ? "#96A2AE" : "#475569",
-    border: dark ? "#2B3540" : "#E2E8F0",
+    sub: dark ? '#96A2AE' : '#475569',
+    border: dark ? '#2B3540' : '#E2E8F0',
     accent: colors.primary,
-    badge: dark ? "#1B2430" : "#EDF2F7",
+    badge: dark ? '#1B2430' : '#EDF2F7',
   };
 
   const [loading, setLoading] = useState(true);
@@ -47,8 +45,10 @@ export default function DiveDetailScreen() {
   const [media, setMedia] = useState<any[]>([]);
   const [weather, setWeather] = useState<any | null>(null);
   const [equipment, setEquipment] = useState<any | null>(null);
-
-  const screenWidth = Dimensions.get("window").width - 32;
+  const [alerts, setAlerts] = useState<any[]>([]);
+  const [decoStops, setDecoStops] = useState<any[]>([]);
+  const [gas, setGas] = useState<any | null>(null);
+  const screenWidth = Dimensions.get('window').width - 32;
 
   useEffect(() => {
     (async () => {
@@ -64,8 +64,14 @@ export default function DiveDetailScreen() {
         setEquipment(e);
         const med = await listMedia(dive_id, 1, 50);
         setMedia(med.data || []);
+        const a = await listAlerts(dive_id);
+        setAlerts(a.data || []);
+        const dStops = await listDecompressionStops(dive_id);
+        setDecoStops(dStops.data || []);
+        const g = await getGas(dive_id);
+        setGas(g);
       } catch (e: any) {
-        Alert.alert("Détail plongée", e?.message || "Erreur de chargement");
+        Alert.alert('Détail plongée', e?.message || 'Erreur de chargement');
       } finally {
         setLoading(false);
       }
@@ -76,31 +82,31 @@ export default function DiveDetailScreen() {
     const measurements = measurementsState;
     if (!measurements.length) {
       return {
-        labels: ["0 min", "10 min", "20 min", "30 min", "40 min", "50 min"],
+        labels: ['0 min', '10 min', '20 min', '30 min', '40 min', '50 min'],
         depthSeries: [],
         tempSeries: [],
         durationMin: 0,
+        maxDepth: 0,
       };
     }
-    const t0 = new Date(measurements.timestamp).getTime(); // base temps
-    const depthSeries = measurements.map((p) => Number(p.depth_current || 0));
-    // Labels fixes (style mock)
-    const labels = ["0 min", "10 min", "20 min", "30 min", "40 min", "50 min"];
+    const t0 = new Date(measurements[0].timestamp).getTime();
+    const depths = measurements.map((p) => Number(p.depth_current || 0));
+    const maxDepth = Math.max(...depths, 0);
+
+    const depthSeries = depths.map((v) => maxDepth - v);
+
+    const labels = ['0 min', '10 min', '20 min', '30 min', '40 min', '50 min'];
     const durationMin = Math.max(
       0,
       Math.round(
-        (new Date(measurements[measurements.length - 1].timestamp).getTime() -
-          t0) /
-          60000
-      )
+        (new Date(measurements[measurements.length - 1].timestamp).getTime() - t0) / 60000,
+      ),
     );
     const temps = measurements
-      .map((p) =>
-        typeof p.temperature === "number" ? Number(p.temperature) : NaN
-      )
+      .map((p) => (typeof p.temperature === 'number' ? Number(p.temperature) : NaN))
       .filter((v) => !Number.isNaN(v));
-    return { labels, depthSeries, tempSeries: temps, durationMin };
-  }, [measurementsState]); // [8]
+    return { labels, depthSeries, tempSeries: temps, durationMin, maxDepth };
+  }, [measurementsState]);
 
   if (loading) {
     return (
@@ -108,7 +114,7 @@ export default function DiveDetailScreen() {
         style={{
           flex: 1,
           backgroundColor: palette.bg,
-          justifyContent: "center",
+          justifyContent: 'center',
         }}
       >
         <ActivityIndicator />
@@ -132,103 +138,80 @@ export default function DiveDetailScreen() {
           marginBottom: 16,
         }}
       >
-        <Text
-          style={{ color: palette.text, fontWeight: "700", marginBottom: 8 }}
-        >
-          Modifier
-        </Text>
-        <View style={{ flexDirection: "row", gap: 10, flexWrap: "wrap" }}>
+        <Text style={{ color: palette.text, fontWeight: '700', marginBottom: 8 }}>Modifier</Text>
+        <View style={{ flexDirection: 'row', gap: 10, flexWrap: 'wrap' }}>
           <Button
             title="Infos générales"
-            onPress={() => rootNav?.navigate("EditDiveInfo", { dive_id })}
+            onPress={() => rootNav?.navigate('EditDiveInfo', { dive_id })}
           />
-          <Button
-            title="Météo"
-            onPress={() => rootNav?.navigate("EditWeather", { dive_id })}
-          />
+          <Button title="Météo" onPress={() => rootNav?.navigate('EditWeather', { dive_id })} />
           <Button
             title="Équipement"
-            onPress={() => rootNav?.navigate("EditEquipment", { dive_id })}
+            onPress={() => rootNav?.navigate('EditEquipment', { dive_id })}
           />
-          <Button
-            title="Médias"
-            onPress={() => rootNav?.navigate("DiveMedia", { dive_id })}
-          />
+          <Button title="Médias" onPress={() => rootNav?.navigate('DiveMedia', { dive_id })} />
         </View>
-      </View>{" "}
+      </View>{' '}
       <Text
         style={{
           color: palette.text,
           fontSize: 16,
-          fontWeight: "700",
+          fontWeight: '700',
           marginBottom: 12,
         }}
       >
-        {dive?.location_name || "Pas de lieu"}
+        {dive?.location_name || 'Pas de lieu'}
       </Text>
       {/* Statistiques */}
       <Text
         style={{
           color: palette.text,
           fontSize: 18,
-          fontWeight: "700",
+          fontWeight: '700',
           marginBottom: 8,
         }}
       >
         Statistiques
       </Text>
-      <View
-        style={{ height: 1, backgroundColor: palette.border, marginBottom: 12 }}
-      />
+      <View style={{ height: 1, backgroundColor: palette.border, marginBottom: 12 }} />
       <View style={{ rowGap: 12 }}>
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <View style={{ width: "48%" }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <View style={{ width: '48%' }}>
             <Text style={{ color: palette.sub }}>Profondeur maximale</Text>
-            <Text style={{ color: palette.text, marginTop: 2 }}>
-              {dive?.depth_max ?? 0} m
-            </Text>
+            <Text style={{ color: palette.text, marginTop: 2 }}>{dive?.depth_max ?? 0} m</Text>
           </View>
-          <View style={{ width: "48%" }}>
+          <View style={{ width: '48%' }}>
             <Text style={{ color: palette.sub }}>Durée totale</Text>
-            <Text style={{ color: palette.text, marginTop: 2 }}>
-              {dive?.duration ?? 0} min
-            </Text>
+            <Text style={{ color: palette.text, marginTop: 2 }}>{dive?.duration ?? 0} min</Text>
           </View>
         </View>
         <View style={{ height: 1, backgroundColor: palette.border }} />
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <View style={{ width: "48%" }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <View style={{ width: '48%' }}>
             <Text style={{ color: palette.sub }}>Température de l’eau</Text>
             <Text style={{ color: palette.text, marginTop: 2 }}>
-              {weather?.surface_temperature != null
-                ? `${weather.surface_temperature}°C`
-                : "—"}
+              {weather?.surface_temperature != null ? `${weather.surface_temperature}°C` : '—'}
             </Text>
           </View>
-          <View style={{ width: "48%" }}>
+          <View style={{ width: '48%' }}>
             <Text style={{ color: palette.sub }}>Consommation d’air</Text>
             <Text style={{ color: palette.text, marginTop: 2 }}>
-              {equipment?.tank_pressure_start != null &&
-              equipment?.tank_pressure_end != null
-                ? `${
-                    equipment.tank_pressure_start - equipment.tank_pressure_end
-                  } psi`
-                : "—"}
+              {equipment?.tank_pressure_start != null && equipment?.tank_pressure_end != null
+                ? `${equipment.tank_pressure_start - equipment.tank_pressure_end} psi`
+                : '—'}
             </Text>
           </View>
         </View>
         <View style={{ height: 1, backgroundColor: palette.border }} />
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <View style={{ width: "48%" }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <View style={{ width: '48%' }}>
             <Text style={{ color: palette.sub }}>Lieu</Text>
-            <Text style={{ color: palette.text, marginTop: 2 }}>
-              {dive?.location_name || "—"}
-            </Text>
+            <Text style={{ color: palette.text, marginTop: 2 }}>{dive?.location_name || '—'}</Text>
           </View>
-          <View style={{ width: "48%" }}>
+          <View style={{ width: '48%' }}>
             <Text style={{ color: palette.sub }}>Date</Text>
             <Text style={{ color: palette.text, marginTop: 2 }}>
-              {dive?.date ? new Date(dive.date).toLocaleDateString() : "—"}
+              {dive?.date ? new Date(dive.date).toLocaleDateString() : '—'}
             </Text>
           </View>
         </View>
@@ -238,7 +221,7 @@ export default function DiveDetailScreen() {
         style={{
           color: palette.text,
           fontSize: 18,
-          fontWeight: "700",
+          fontWeight: '700',
           marginTop: 20,
           marginBottom: 8,
         }}
@@ -250,7 +233,7 @@ export default function DiveDetailScreen() {
         style={{
           color: palette.text,
           fontSize: 32,
-          fontWeight: "800",
+          fontWeight: '800',
           marginTop: 4,
         }}
       >
@@ -270,7 +253,7 @@ export default function DiveDetailScreen() {
               datasets: [
                 {
                   data: chart.depthSeries,
-                  color: () => "#38BDF8",
+                  color: () => '#38BDF8',
                   strokeWidth: 2,
                   withDots: false,
                 },
@@ -283,30 +266,108 @@ export default function DiveDetailScreen() {
             withOuterLines={false}
             yAxisSuffix=" m"
             fromZero
+            formatYLabel={(val) => {
+              // remettre les vraies profondeurs
+              const inverted = chart.maxDepth - Number(val);
+              return `${Math.round(inverted)}`;
+            }}
             chartConfig={{
               backgroundColor: palette.bg,
               backgroundGradientFrom: palette.bg,
               backgroundGradientTo: palette.bg,
               decimalPlaces: 0,
               color: (opacity = 1) =>
-                dark
-                  ? `rgba(234,242,248,${opacity})`
-                  : `rgba(15,23,42,${opacity})`,
+                dark ? `rgba(234,242,248,${opacity})` : `rgba(15,23,42,${opacity})`,
               labelColor: (opacity = 1) =>
-                dark
-                  ? `rgba(150,162,174,${opacity})`
-                  : `rgba(71,85,105,${opacity})`,
+                dark ? `rgba(150,162,174,${opacity})` : `rgba(71,85,105,${opacity})`,
               propsForBackgroundLines: { stroke: palette.border },
-              propsForDots: { r: "0" },
+              propsForDots: { r: '0' },
             }}
             bezier
             style={{ borderRadius: 12 }}
           />
         </View>
       ) : (
-        <Text style={{ color: palette.sub }}>
-          Pas encore de mesures pour tracer la courbe.
+        <Text style={{ color: palette.sub }}>Pas encore de mesures pour tracer la courbe.</Text>
+      )}
+      {/* Alertes */}
+      <Text
+        style={{
+          color: palette.text,
+          fontSize: 18,
+          fontWeight: '700',
+          marginTop: 20,
+          marginBottom: 8,
+        }}
+      >
+        Alertes
+      </Text>
+      {alerts.length ? (
+        alerts.map((al) => (
+          <View
+            key={al.alert_id}
+            style={{
+              marginBottom: 8,
+              padding: 8,
+              backgroundColor: palette.badge,
+              borderRadius: 8,
+            }}
+          >
+            <Text style={{ color: palette.text, fontWeight: '700' }}>{al.code}</Text>
+            <Text style={{ color: palette.sub }}>{al.message}</Text>
+            <Text style={{ color: palette.sub, fontSize: 12 }}>
+              {new Date(al.timestamp).toLocaleTimeString()} - {al.severity}
+            </Text>
+          </View>
+        ))
+      ) : (
+        <Text style={{ color: palette.sub }}>Aucune alerte déclenchée</Text>
+      )}
+      {/* Gaz utilisé */}
+      <Text
+        style={{
+          color: palette.text,
+          fontSize: 18,
+          fontWeight: '700',
+          marginTop: 20,
+          marginBottom: 8,
+        }}
+      >
+        Gaz utilisé
+      </Text>
+      {gas ? (
+        <Text style={{ color: palette.text }}>
+          {gas.name} (O₂: {gas.oxygen ?? '—'}%, N₂: {gas.nitrogen ?? '—'}%, He: {gas.helium ?? '—'}
+          %)
         </Text>
+      ) : (
+        <Text style={{ color: palette.sub }}>Aucun gaz renseigné</Text>
+      )}
+      {equipment?.tank_pressure_start != null && equipment?.tank_pressure_end != null && (
+        <Text style={{ color: palette.sub }}>
+          Consommation: {equipment.tank_pressure_start - equipment.tank_pressure_end} psi
+        </Text>
+      )}
+      {/* Paliers de décompression */}
+      <Text
+        style={{
+          color: palette.text,
+          fontSize: 18,
+          fontWeight: '700',
+          marginTop: 20,
+          marginBottom: 8,
+        }}
+      >
+        Paliers de décompression
+      </Text>
+      {decoStops.length ? (
+        decoStops.map((stop) => (
+          <Text key={stop.stop_id} style={{ color: palette.sub }}>
+            {stop.depth} m pendant {stop.duration} min
+          </Text>
+        ))
+      ) : (
+        <Text style={{ color: palette.sub }}>Aucun palier de décompression</Text>
       )}
       {/* Carte */}
       {hasCoordinates && (
@@ -315,7 +376,7 @@ export default function DiveDetailScreen() {
             style={{
               color: palette.text,
               fontSize: 18,
-              fontWeight: "700",
+              fontWeight: '700',
               marginTop: 20,
               marginBottom: 8,
             }}
@@ -323,7 +384,7 @@ export default function DiveDetailScreen() {
             Localisation
           </Text>
           <MapView
-            style={{ width: "100%", height: 200, borderRadius: 12 }}
+            style={{ width: '100%', height: 200, borderRadius: 12 }}
             initialRegion={{
               latitude: dive.latitude,
               longitude: dive.longitude,
@@ -336,7 +397,7 @@ export default function DiveDetailScreen() {
                 latitude: dive.latitude,
                 longitude: dive.longitude,
               }}
-              title={dive.location_name || "Plongée"}
+              title={dive.location_name || 'Plongée'}
             />
           </MapView>
         </>
@@ -346,22 +407,20 @@ export default function DiveDetailScreen() {
         style={{
           color: palette.text,
           fontSize: 18,
-          fontWeight: "700",
+          fontWeight: '700',
           marginTop: 20,
           marginBottom: 8,
         }}
       >
         Notes
       </Text>
-      <Text style={{ color: palette.text }}>
-        {dive?.notes?.trim()?.length ? dive.notes : "—"}
-      </Text>
+      <Text style={{ color: palette.text }}>{dive?.notes?.trim()?.length ? dive.notes : '—'}</Text>
       {/* Photos et vidéos */}
       <Text
         style={{
           color: palette.text,
           fontSize: 18,
-          fontWeight: "700",
+          fontWeight: '700',
           marginTop: 20,
           marginBottom: 8,
         }}
@@ -369,9 +428,9 @@ export default function DiveDetailScreen() {
         Photos et vidéos
       </Text>
       {media.length ? (
-        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
           {media.slice(0, 6).map((m) =>
-            m.media_type === "image" ? (
+            m.media_type === 'image' ? (
               <Image
                 key={m.media_id}
                 source={{ uri: m.url }}
@@ -390,13 +449,13 @@ export default function DiveDetailScreen() {
                   height: 140,
                   borderRadius: 12,
                   backgroundColor: palette.badge,
-                  alignItems: "center",
-                  justifyContent: "center",
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
               >
                 <Text style={{ color: palette.text }}>Vidéo</Text>
               </View>
-            )
+            ),
           )}
         </View>
       ) : (
