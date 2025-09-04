@@ -36,6 +36,7 @@
 - [Choix techniques](./docs/technical_choices.md)
 - Diagramme d’intégration :  
   ![Integration](./docs/schema/integration.png)
+- Shema montage électrique:  [Shema](./docs/shema_montage.pdf)
 
 ---
 

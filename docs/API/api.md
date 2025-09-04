@@ -51,7 +51,20 @@ Lancez les migrations de base pour créer les tables :
 ```bash
 psql postgres://abyss:abyss@localhost:5433/abyss -f ./migrations/init.sql
 ```
+### Variables d'environnement
+```
+TEST_DATABASE_URL=postgres://abyss:abyss@localhost:5433/abyss_test
 
+DATABASE_URL=postgres://abyss:abyss@localhost:5433/abyss_test
+
+JWT_SECRET=test-secret
+MOBILE_ORIGIN=http://localhost:19006
+ADMIN_ORIGIN=http://localhost:5173
+
+SEED_USER_EMAIL=seed@example.com
+SEED_USER_PASSWORD=seedpassword
+```
+Ne pas oublié de remplire avec les donnée de votre base de donnée
 ### Données de test
 
 Pour remplir la base avec des données fictives :
