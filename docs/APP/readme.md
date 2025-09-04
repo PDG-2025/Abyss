@@ -34,7 +34,11 @@ yarn install
 *(ou `npm install` si vous préférez npm)*
 
 ---
-
+## Variables d'environnement 
+```
+EXPO_PUBLIC_API_BASE = "http://localhost:3000"
+```
+Ne pas oublié de mettre le liens de votre API
 ## ▶️ Lancer l'application
 
 ### Mode développement avec Expo
