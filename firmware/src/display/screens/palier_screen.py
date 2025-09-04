@@ -1,3 +1,5 @@
+from datetime import datetime, timezone, timedelta
+from utils.utils import up_down_from_file
 from display.screens.template_screen import TemplateScreen, FT_SMALL, FT_BIG
 
 class PalierScreen(TemplateScreen):
@@ -13,7 +15,7 @@ class PalierScreen(TemplateScreen):
         self.modify_field("ind_ndl", "NDL")
         self.add_field("ind_ndl_time", 90, 130, FT_SMALL)
         self.modify_field("ind_ndl_time", "MIN")
-        self.add_field("ind_depth", 275, 110, FT_SMALL)
+        self.add_field("ind_depth", 290, 110, FT_SMALL)
         self.modify_field("ind_depth", "m")
         self.add_field("ind_updown", 370, 134, FT_SMALL)
         self.modify_field("ind_updown", "m/min")
@@ -46,13 +48,18 @@ class PalierScreen(TemplateScreen):
 
         self.add_field("val_timer", 290, 280, FT_SMALL)
 
+    def update_values(self, sensor_raw, timer):
+        self.modify_field("val_time",
+                          datetime.now(timezone(timedelta(hours=2))).strftime("%H:%M:%S"))
+        self.modify_field("val_battery", "00"+ '%')
+        self.modify_field("val_pressure", "000")
+        self.modify_field("val_ndl", sensor_raw[5])
+        self.modify_field("val_depth", f"{sensor_raw[2]:.2f}")
+        self.modify_field("val_updown", up_down_from_file())
+        self.modify_field("val_palier", sensor_raw[6])
+        self.modify_field("val_palier_time", sensor_raw[7])
+        self.modify_field("val_timer", str(timer))
 
-    def update(self):
-        '''
-        add update:
-        - pressure
-        - time left
-        - palier
-        - depth
-        - updown
-        '''
+
+    def update(self, button):
+        return None

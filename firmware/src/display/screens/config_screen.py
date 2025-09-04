@@ -51,6 +51,9 @@ class ConfigScreen(TemplateScreen):
         self.modifiy_x_y("selector", self.phase.value)
         self.modify_field("selector", '➡️')
 
+    def get_per(self):
+        return self.gaz_p
+
     def up_phase(self):
         if self.phase == PHASE.SELECT_O_ALARME:
             self.phase = PHASE.SELECT_O_GAZ
@@ -92,7 +95,7 @@ class ConfigScreen(TemplateScreen):
         else:
             self.alarm = self.alarm.next()
 
-    def update_info(self):
+    def update_values(self):
         self.modify_field("val_gaz", self.gaz.value)
         self.modify_field("val_gaz_perc", str(self.gaz_p)+'%')
         self.modify_field("val_alarme", self.alarm.value)
@@ -165,7 +168,7 @@ class ConfigScreen(TemplateScreen):
                         return CONF_OPT.BLE_CN
                     case PHASE.START:
                         return True
-        return False
+        return None
 
 
 

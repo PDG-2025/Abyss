@@ -20,7 +20,7 @@ class TemplateScreen:
         with self.fields_lock:
             self.fields[name] = {
                 'pos': (x,y),
-                'value': "-1",
+                'value': "",
                 'font': font
             }
 
@@ -42,3 +42,6 @@ class TemplateScreen:
                 font = info['font']
                 draw.text((pos[0], pos[1]), value, font=font, fill="black")
         return img
+
+    def update(self, button):
+        pass

@@ -1,6 +1,9 @@
 import RPi.GPIO as GPIO
 import time, threading
 from display.display_manager import DisplayManager
+from display.screens.exit_screen import ExitScreen
+from display.screens.general_screen import GeneralScreen
+from utils.utils import CONF_OPT
 
 class ButtonManager:
     def __init__(self, display, sensors):
@@ -14,8 +17,23 @@ class ButtonManager:
         """Fonction déclenchée quand un bouton est pressé"""
         if channel == 5:
             print("Bouton sur GPIO 5 appuyé → Action 1")
-            self.display.press_enter()
-            # mets ton action ici
+            need_attention = self.display.press_enter()
+            if need_attention is not None:
+                match need_attention:
+                    case True:
+                        if isinstance(self.display.screen, ExitScreen):
+                            self.sensors.stop()
+                            self.display.config_mode()
+                        else:
+                            self.sensors.start()
+                            self.display.dive_mode()
+                    case CONF_OPT.CMP_CL:
+                        self.sensors.calibrate_qmc5883l()
+                        self.display.calibrated(self.sensors.is_calibrated())
+                    case CONF_OPT.BLE_CN:
+                        print("Add bluetooth connection")
+                    case False:
+                        self.display.screen = GeneralScreen()
         elif channel == 6:
             print("Bouton sur GPIO 6 appuyé → Action 2")
             self.display.press_down()
@@ -52,6 +70,7 @@ class ButtonManager:
         try:
             self.stop_thread = True
             self.thread.join()
+            print("ButtonManager stopped.")
         except:
             return False
         return True

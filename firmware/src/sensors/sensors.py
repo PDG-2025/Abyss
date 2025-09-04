@@ -1,8 +1,8 @@
 import time, math, smbus2, json, threading
 from datetime import datetime
 import ms5837
+from utils.utils import LOG_FILE, LOCK_JSON
 
-LOG_FILE = "logs/mesures.json"
 QMC5883L_BUS = 1
 QMC5883L_ADDR = 0x0D
 QMC5883L_REGISTER = 0x09
@@ -94,29 +94,32 @@ class SensorsManager:
 
     def log_measurement(self):
         """Stocke une mesure dans un fichier JSON avec un horodatage"""
-        with self.sensors_data_lock:
-            data = {
-                "timestamp": datetime.utcnow().isoformat() + "Z",  # temps UTC format ISO 8601
-                "temperature_c": self.sensors_data['temp'],
-                "pression_mbar": self.sensors_data['press'],
-                "profondeur_m": self.sensors_data['depth'],
-                "azimut_deg": self.sensors_data['azimut']
-            }
+        data = {
+            "timestamp": datetime.utcnow().isoformat() + "Z",  # temps UTC format ISO 8601
+            "temperature_c": self.sensors_data['temp'],
+            "pression_mbar": self.sensors_data['press'],
+            "profondeur_m": self.sensors_data['depth'],
+            "azimut_deg": self.sensors_data['azimut']
+        }
         # lire l’ancien contenu
-        try:
-            with open(LOG_FILE, "r") as f:
-                mesures = json.load(f)
-        except (FileNotFoundError, json.JSONDecodeError):
-            mesures = []
+        with LOCK_JSON:
+            try:
+                with open(LOG_FILE, "r") as f:
+                    mesures = json.load(f)
+            except (FileNotFoundError, json.JSONDecodeError):
+                mesures = []
         # ajouter la nouvelle mesure
         mesures.append(data)
         # sauvegarder
-        with open(LOG_FILE, "w") as f:
-            json.dump(mesures, f, indent=2)
+        with LOCK_JSON:
+            with open(LOG_FILE, "w") as f:
+                json.dump(mesures, f, indent=2)
 
         return True
 
     def read_heading(self):
+        if not self.is_calibrated():
+            return -1
         x, y, z = self.read_raw_qmc5883l()
         x -= self.x_offset
         y -= self.y_offset
@@ -128,12 +131,17 @@ class SensorsManager:
     def job(self):
         while not self.stop_thread:
             with self.sensors_data_lock:
-                self.sensors_data['azimut'] = self.read_heading()
-                if self.ms5837.read():
-                    self.sensors_data['temp'] = self.ms5837.temperature()
-                    self.sensors_data['press'] = self.ms5837.pressure()
-                    self.sensors_data['depth'] = self.ms5837.depth()
-                    self.log_measurement()
+                try:
+                    self.sensors_data['azimut'] = self.read_heading()
+                    if self.ms5837.read():
+                        self.sensors_data['temp'] = self.ms5837.temperature()
+                        self.sensors_data['press'] = self.ms5837.pressure()
+                        self.sensors_data['depth'] = self.ms5837.depth() + 0.6
+                        if self.sensors_data["depth"] < 0:
+                            self.sensors_data["depth"] = 0
+                        self.log_measurement()
+                except Exception as e:
+                    print("sensors reading error : ", e)
             time.sleep(0.2)
 
     def start(self):
@@ -148,6 +156,7 @@ class SensorsManager:
         try:
             self.stop_thread = True
             self.thread.join()
+            print("sensors stopped.")
         except:
             return False
         return True
