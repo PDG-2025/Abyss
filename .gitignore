@@ -44,8 +44,6 @@ wheels/
 .installed.cfg
 *.egg
 
-
-api/.env.test
 /app/android/.gradle
 node_modules
-
+api/.env.prod
