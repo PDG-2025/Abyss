@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useAuthStore } from '../store/auth';
 
-// Instance de base neutre (pour refresh)
+// Instance de base neutre
 export const BASE_URL = process.env.EXPO_PUBLIC_API_BASE || 'http://localhost:3000';
 export const base = axios.create({
   baseURL: BASE_URL,
@@ -96,7 +96,7 @@ api.interceptors.response.use(
       }
     }
 
-    // 403 → purge session (option)
+    // 403 → purge session
     if (status === 403) {
       await useAuthStore.getState().clearSession();
     }

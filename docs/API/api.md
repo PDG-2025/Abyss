@@ -1,13 +1,135 @@
-# Doccumentation API
+# 🌊 Abyss Diving API
+
+API REST développée avec **Node.js**, **Express** et **PostgreSQL** pour gérer les plongées, utilisateurs et données associées de l'application Abyss Diving.
+
+---
+
+## 📦 Prérequis
+
+Avant de lancer l’API en local, assurez-vous d’avoir installé :
+
+- [Node.js](https://nodejs.org/) (>= 18.x recommandé)
+- [PostgreSQL](https://www.postgresql.org/) (>= 14.x recommandé)
+- [Yarn](https://yarnpkg.com/) ou npm
+- Une base de données PostgreSQL configurée (dev/test/prod)
+
+---
+
+## ⚙️ Configuration
+
+Créez un fichier `.env` à la racine du projet avec vos variables :
+
+```env
+# Exemple .env
+PORT=4000
+DATABASE_URL=postgres://abyss:abyss@localhost:5433/abyss
+JWT_SECRET=super-secret-key
+```
+
+---
+
+## 🚀 Installation
+
+Clonez le dépôt et installez les dépendances :
+
+```bash
+git clone https://github.com/PDG-2025/Abyss.git
+cd abyss/api
+yarn install
+```
+
+*(ou `npm install` si vous préférez npm)*
+
+---
+
+## 🗄️ Base de données
+
+### Initialisation
+
+Lancez les migrations de base pour créer les tables :
+
+```bash
+psql postgres://abyss:abyss@localhost:5433/abyss -f ./migrations/init.sql
+```
+
+### Données de test
+
+Pour remplir la base avec des données fictives :
+
+```bash
+yarn create:data
+```
+
+---
+
+## ▶️ Lancer l’API
+
+### Mode développement (avec reload automatique)
+
+```bash
+yarn dev
+```
+
+### Mode production
+
+```bash
+yarn build
+yarn start
+```
+
+### Mode test
+
+```bash
+yarn start:test
+```
+
+---
+
+## 🧪 Tests
+
+Lancer l’ensemble de la suite de tests (Jest + Supertest) :
+
+```bash
+yarn test
+```
+
+---
+
+## 📁 Structure du projet
+
+```
+.
+├── app.ts             # Entrée principale (dev)
+├── server.ts          # Entrée principale (prod/test)
+├── migrations/        # SQL de création des tables
+├── scripts/           # Scripts utilitaires (ex: seed)
+├── src/               # Code source
+│   ├── routes/        # Routes Express
+│   ├── controllers/   # Logique métier
+│   ├── middlewares/   # Middlewares Express
+│   ├── models/        # Accès BDD
+│   └── utils/         # Utilitaires (auth, validation…)
+├── tests/             # Tests unitaires et intégration
+├── package.json
+└── README.md
+```
+
+---
+
 ## Format des erreurs
 - Format standard: { error: string, details?: object, requestId?: string }.
 - Erreurs de validation Zod: 400 avec details = error.flatten().
 
-## Sécurité
-- Authentification JWT via Authorization: Bearer <token>.
-- Limitation de débit: globale, plus stricte sur /auth et /sync.
-- CORS strict: origines explicites uniquement.
-- Compression activée.
+
+## 🛡️ Sécurité & middlewares
+
+* **helmet** : sécurisation des headers HTTP
+* **cors** : gestion du Cross-Origin
+* **express-rate-limit** : protection contre le spam / DDoS
+* **bcrypt** : hash des mots de passe
+* **jsonwebtoken (JWT)** : authentification sécurisée
+
+---
 
 ## Middleware
 
