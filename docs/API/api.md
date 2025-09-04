@@ -148,6 +148,45 @@ GET /devices/:device_id/dives?page=&limit=
 - Validation: listDeviceDivesSchema.
 - Auth: Bearer token.
 
+PATCH /devices/:device_id/firmware
+- Objet: mettre à jour la version firmware stockée après une OTA réussie.
+- Auth: Bearer token; ownership par user_id.
+- Params:
+  - device_id: integer.
+- Body:
+  - firmware_version: string (ex: “1.2.3”).
+- 200: Device mis à jour (avec firmware_version).
+- 400: firmware_version manquant/invalidé (Zod).
+- 404: appareil inexistant ou n’appartenant pas à l’utilisateur.
+
+Changements connexes
+- Middleware validate: appliquer validation Zod sur query/params/body; retourner 400 avec details.flatten() comme déjà défini.
+- Rate limiting: conserver la politique actuelle; /firmware/latest peut être mis en cache CDN.
+
+
+### Firmware
+GET /firmware/latest?model=
+- Objet: retourner la dernière version disponible pour un modèle d’ordinateur, avec une URL HTTPS du binaire pour téléchargement par le mobile.
+- Auth: Bearer token.
+- Query:
+  - model: string (ex: “Abyss-One”).
+- 200:
+  {
+    "model": "Abyss-One",
+    "version": "1.2.3",
+    "url": "https://cdn.example.com/firmware/abyss-one-1.2.3.bin",
+    "checksum": "sha256-BASE64",
+    "size": 1234567,
+    "mandatory": false,
+    "release_notes": "Corrections BLE et stabilité."
+  }
+- 400: model manquant/invalidé (Zod).
+- Notes:
+  - Toujours fournir une URL HTTPS; éviter FTP côté mobile (sécurité/pare-feu).
+  - Fournir checksum et taille pour contrôle d’intégrité côté app.
+  - Versionner l’API si nécessaire pour changements cassants (ex: /v1/firmware/latest).
+
+
 ### Gas
 
 POST /gas
@@ -430,6 +469,5 @@ Exemple:
 - Utiliser les filtres from/to et pagination pour les lectures de séries.
 - Préférer /sync/dive pour synchroniser une session complète post-plongée.
 
-## Section “Changelog” (optionnelle)
+## Section “Changelog”
 - V1 26 aout 2025
-

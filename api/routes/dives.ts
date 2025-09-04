@@ -1,16 +1,14 @@
 import { Router } from "express";
 import { requireAuth } from "../middleware/auth";
 import { validate } from "../middleware/validate";
-import {
-  listDivesSchema,
-  createDiveSchema,
-  updateDiveSchema,
-  diveIdSchema,
-} from "../schemas/dives";
+import { listDivesSchema, diveIdSchema } from "../schemas/dives";
 import { query } from "../db/pool";
 
 const router = Router();
 
+/**
+ * GET /dives : liste complète avec relations
+ */
 router.get(
   "/",
   requireAuth,
@@ -18,59 +16,61 @@ router.get(
   async (req, res, next) => {
     try {
       const uid = (req as any).user.user_id;
-      const q = (req as any).query;
-      const page = Number(q.page ?? 1),
-        limit = Number(q.limit ?? 50),
-        offset = (page - 1) * limit;
+      const q = req.query;
+      const page = Number(q.page ?? 1);
+      const limit = Number(q.limit ?? 50);
+      const offset = (page - 1) * limit;
 
-      const filters: string[] = ["user_id=$1"];
+      const filters: string[] = ['d."user_id" = $1'];
       const params: any[] = [uid];
 
       if (q.from) {
         params.push(q.from);
-        filters.push(`date >= $${params.length}`);
+        filters.push(`d.date >= $${params.length}`);
       }
       if (q.to) {
         params.push(q.to);
-        filters.push(`date <= $${params.length}`);
+        filters.push(`d.date <= $${params.length}`);
       }
       if (q.device_id) {
         params.push(q.device_id);
-        filters.push(`device_id = $${params.length}`);
+        filters.push(`d.device_id = $${params.length}`);
       }
       if (q.location_id) {
         params.push(q.location_id);
-        filters.push(`location_id = $${params.length}`);
+        filters.push(`d.location_id = $${params.length}`);
       }
       if (q.gas_id) {
         params.push(q.gas_id);
-        filters.push(`gas_id = $${params.length}`);
+        filters.push(`d.gas_id = $${params.length}`);
       }
 
       params.push(limit, offset);
 
       const sql = `
-SELECT 
-  dive_id,
-  user_id,
-  device_id,
-  location_id,
-  gas_id,
-  buddy_name,
-  dive_purpose,
-  entry_type,
-  certification_level,
-  visibility_underwater,
-  date,
-  duration,
-  depth_max,
-  average_depth,
-  ndl_limit
-FROM "Dive"
+SELECT d.*, 
+       l.name AS location_name, l.latitude, l.longitude, l.water_type, l.certification_required,
+       w.surface_temperature, w.wind_speed, w.wave_height, w.visibility_surface, w.description AS weather_desc,
+       e.wetsuit_thickness, e.tank_size, e.tank_pressure_start, e.tank_pressure_end, e.weights_used,
+       COALESCE(json_agg(DISTINCT jsonb_build_object('media_id', m.media_id, 'url', m.url, 'type', m.media_type, 'desc', m.description, 'timestamp', m.timestamp_taken)) FILTER (WHERE m.media_id IS NOT NULL), '[]') AS medias,
+       COALESCE(json_agg(DISTINCT jsonb_build_object('alert_id', a.alert_id, 'code', a.code, 'message', a.message, 'severity', a.severity, 'timestamp', a.timestamp)) FILTER (WHERE a.alert_id IS NOT NULL), '[]') AS alerts,
+       COALESCE(json_agg(DISTINCT jsonb_build_object('stop_id', s.stop_id, 'depth', s.depth, 'duration', s.duration)) FILTER (WHERE s.stop_id IS NOT NULL), '[]') AS stops,
+       COALESCE(json_agg(DISTINCT jsonb_build_object('compass_id', c.compass_id, 'timestamp', c.timestamp, 'heading', c.heading)) FILTER (WHERE c.compass_id IS NOT NULL), '[]') AS compass,
+       COALESCE(json_agg(DISTINCT jsonb_build_object('measurement_id', me.measurement_id, 'timestamp', me.timestamp, 'depth', me.depth_current, 'temp', me.temperature, 'ascent_speed', me.ascent_speed)) FILTER (WHERE me.measurement_id IS NOT NULL), '[]') AS measurements
+FROM "Dive" d
+LEFT JOIN "Location" l ON d.location_id = l.location_id
+LEFT JOIN "WeatherConditions" w ON w.dive_id = d.dive_id
+LEFT JOIN "Equipment" e ON e.dive_id = d.dive_id
+LEFT JOIN "Media" m ON m.dive_id = d.dive_id
+LEFT JOIN "Alert" a ON a.dive_id = d.dive_id
+LEFT JOIN "DecompressionStop" s ON s.dive_id = d.dive_id
+LEFT JOIN "Compass" c ON c.dive_id = d.dive_id
+LEFT JOIN "Measurement" me ON me.dive_id = d.dive_id
 WHERE ${filters.join(" AND ")}
-ORDER BY date DESC
-LIMIT $${params.length - 1} OFFSET $${params.length}
-`;
+GROUP BY d.dive_id, l.location_id, w.weather_id, e.equipment_id
+ORDER BY d.date DESC
+LIMIT $${params.length - 1} OFFSET $${params.length};
+    `;
 
       const { rows } = await query(sql, params);
       res.json({ page, limit, data: rows });
@@ -80,42 +80,9 @@ LIMIT $${params.length - 1} OFFSET $${params.length}
   }
 );
 
-router.post(
-  "/",
-  requireAuth,
-  validate(createDiveSchema),
-  async (req, res, next) => {
-    try {
-      const uid = (req as any).user.user_id;
-      const b = (req as any).body;
-      const { rows } = await query(
-        `INSERT INTO "Dive"(user_id,device_id,location_id,gas_id,buddy_name,dive_purpose,entry_type,certification_level,visibility_underwater,notes,date,duration,depth_max,average_depth,ndl_limit)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING *`,
-        [
-          uid,
-          b.device_id ?? null,
-          b.location_id ?? null,
-          b.gas_id ?? null,
-          b.buddy_name ?? null,
-          b.dive_purpose ?? null,
-          b.entry_type ?? null,
-          b.certification_level ?? null,
-          b.visibility_underwater ?? null,
-          b.notes ?? null,
-          b.date,
-          b.duration,
-          b.depth_max,
-          b.average_depth,
-          b.ndl_limit ?? null,
-        ]
-      );
-      res.status(201).json(rows[0]);
-    } catch (e) {
-      next(e);
-    }
-  }
-);
-
+/**
+ * GET /dives/:id : une plongée avec tout
+ */
 router.get(
   "/:id",
   requireAuth,
@@ -124,14 +91,33 @@ router.get(
     try {
       const uid = (req as any).user.user_id;
       const id = Number(req.params.id);
-      if (Number.isNaN(id)) {
+      if (Number.isNaN(id))
         return res.status(400).json({ error: "Invalid dive_id" });
-      }
-      const { rows } = await query(
-        'SELECT * FROM "Dive" WHERE dive_id=$1 AND user_id=$2',
-        [id, uid]
-      );
-      if (rows.length === 0)
+
+      const sql = `
+SELECT d.*, 
+       l.name AS location_name, l.latitude, l.longitude, l.water_type, l.certification_required,
+       w.surface_temperature, w.wind_speed, w.wave_height, w.visibility_surface, w.description AS weather_desc,
+       e.wetsuit_thickness, e.tank_size, e.tank_pressure_start, e.tank_pressure_end, e.weights_used,
+       COALESCE(json_agg(DISTINCT jsonb_build_object('media_id', m.media_id, 'url', m.url, 'type', m.media_type, 'desc', m.description, 'timestamp', m.timestamp_taken)) FILTER (WHERE m.media_id IS NOT NULL), '[]') AS medias,
+       COALESCE(json_agg(DISTINCT jsonb_build_object('alert_id', a.alert_id, 'code', a.code, 'message', a.message, 'severity', a.severity, 'timestamp', a.timestamp)) FILTER (WHERE a.alert_id IS NOT NULL), '[]') AS alerts,
+       COALESCE(json_agg(DISTINCT jsonb_build_object('stop_id', s.stop_id, 'depth', s.depth, 'duration', s.duration)) FILTER (WHERE s.stop_id IS NOT NULL), '[]') AS stops,
+       COALESCE(json_agg(DISTINCT jsonb_build_object('compass_id', c.compass_id, 'timestamp', c.timestamp, 'heading', c.heading)) FILTER (WHERE c.compass_id IS NOT NULL), '[]') AS compass,
+       COALESCE(json_agg(DISTINCT jsonb_build_object('measurement_id', me.measurement_id, 'timestamp', me.timestamp, 'depth', me.depth_current, 'temp', me.temperature, 'ascent_speed', me.ascent_speed)) FILTER (WHERE me.measurement_id IS NOT NULL), '[]') AS measurements
+FROM "Dive" d
+LEFT JOIN "Location" l ON d.location_id = l.location_id
+LEFT JOIN "WeatherConditions" w ON w.dive_id = d.dive_id
+LEFT JOIN "Equipment" e ON e.dive_id = d.dive_id
+LEFT JOIN "Media" m ON m.dive_id = d.dive_id
+LEFT JOIN "Alert" a ON a.dive_id = d.dive_id
+LEFT JOIN "DecompressionStop" s ON s.dive_id = d.dive_id
+LEFT JOIN "Compass" c ON c.dive_id = d.dive_id
+LEFT JOIN "Measurement" me ON me.dive_id = d.dive_id
+WHERE d.dive_id=$1 AND d.user_id=$2
+GROUP BY d.dive_id, l.location_id, w.weather_id, e.equipment_id
+    `;
+      const { rows } = await query(sql, [id, uid]);
+      if (!rows.length)
         return res.status(404).json({ error: "Dive not found" });
 
       res.json(rows[0]);
@@ -141,62 +127,68 @@ router.get(
   }
 );
 
-router.patch(
-  "/:id",
-  requireAuth,
-  validate(updateDiveSchema),
-  async (req, res, next) => {
-    try {
-      const uid = (req as any).user.user_id;
-      const id = Number(req.params.id);
-      if (Number.isNaN(id)) {
-        return res.status(400).json({ error: "Invalid device_id" });
-      }
-      const b = (req as any).body;
-      const { rows } = await query(
-        `UPDATE "Dive" SET
-        device_id = COALESCE($1,device_id),
-        location_id = COALESCE($2,location_id),
-        gas_id = COALESCE($3,gas_id),
-        buddy_name = COALESCE($4,buddy_name),
-        dive_purpose = COALESCE($5,dive_purpose),
-        entry_type = COALESCE($6,entry_type),
-        certification_level = COALESCE($7,certification_level),
-        visibility_underwater = COALESCE($8,visibility_underwater),
-        notes = COALESCE($9,notes),
-        date = COALESCE($10,date),
-        duration = COALESCE($11,duration),
-        depth_max = COALESCE($12,depth_max),
-        average_depth = COALESCE($13,average_depth),
-        ndl_limit = COALESCE($14,ndl_limit)
-       WHERE dive_id=$15 AND user_id=$16 RETURNING *`,
-        [
-          b.device_id ?? null,
-          b.location_id ?? null,
-          b.gas_id ?? null,
-          b.buddy_name ?? null,
-          b.dive_purpose ?? null,
-          b.entry_type ?? null,
-          b.certification_level ?? null,
-          b.visibility_underwater ?? null,
-          b.notes ?? null,
-          b.date ?? null,
-          b.duration ?? null,
-          b.depth_max ?? null,
-          b.average_depth ?? null,
-          b.ndl_limit ?? null,
-          id,
-          uid,
-        ]
-      );
-      if (!rows) return res.status(404).json({ error: "Plongée introuvable" });
-      res.json(rows[0]);
-    } catch (e) {
-      next(e);
-    }
-  }
-);
+/**
+ * PATCH /dives/:id : modification partielle
+ */
+router.patch("/:id", requireAuth, async (req, res) => {
+  const { id } = req.params;
+  const validColumns = [
+    "user_id",
+    "device_id",
+    "location_id",
+    "gas_id",
+    "buddy_name",
+    "dive_purpose",
+    "entry_type",
+    "certification_level",
+    "visibility_underwater",
+    "notes",
+    "date",
+    "duration",
+    "depth_max",
+    "average_depth",
+    "ndl_limit",
+  ];
+  const data = Object.fromEntries(
+    Object.entries(req.body).filter(([key]) => validColumns.includes(key))
+  );
 
+  try {
+    if (Object.keys(data).length === 0) {
+      return res
+        .status(400)
+        .json({ message: "Aucun champ valide à mettre à jour" });
+    }
+
+    const setClauses = [];
+    const values = [];
+    let idx = 1;
+
+    for (const [key, value] of Object.entries(data)) {
+      setClauses.push(`${key} = $${idx}`);
+      values.push(value);
+      idx++;
+    }
+
+    values.push(id);
+    const sql = `UPDATE "Dive" SET ${setClauses.join(
+      ", "
+    )} WHERE dive_id = $${idx} RETURNING *;`;
+
+    const result = await query(sql, values);
+    if (result.rowCount === 0)
+      return res.status(404).json({ message: "Plongée introuvable" });
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("Erreur PATCH /dives/:id", err);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+});
+
+/**
+ * DELETE /dives/:id : suppression
+ */
 router.delete(
   "/:id",
   requireAuth,
@@ -205,16 +197,16 @@ router.delete(
     try {
       const uid = (req as any).user.user_id;
       const id = Number(req.params.id);
-      console.log(id);
-      if (Number.isNaN(id)) {
+      if (Number.isNaN(id))
         return res.status(400).json({ error: "Invalid dive_id" });
-      }
+
       const { rowCount } = await query(
-        'DELETE FROM "Dive" WHERE dive_id=$1 AND user_id=$2',
+        `DELETE FROM "Dive" WHERE dive_id=$1 AND user_id=$2`,
         [id, uid]
       );
       if (rowCount === 0)
         return res.status(404).json({ error: "Dive not found" });
+
       res.status(204).send();
     } catch (e) {
       next(e);

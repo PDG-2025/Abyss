@@ -1,22 +1,25 @@
-import React from 'react';
-import { View, Text, Pressable } from 'react-native';
-import { useUIStore } from '../../../store/ui';
+import React, { useMemo } from "react";
+import { View, Text, Pressable } from "react-native";
+import { useTheme } from "@react-navigation/native";
+import { useUIStore } from "../../../store/ui";
 
-function Radio({
+function RadioRow({
   label,
   selected,
   onPress,
+  palette,
 }: {
   label: string;
   selected: boolean;
   onPress: () => void;
+  palette: any;
 }) {
   return (
     <Pressable
       onPress={onPress}
       style={{
-        flexDirection: 'row',
-        alignItems: 'center',
+        flexDirection: "row",
+        alignItems: "center",
         paddingVertical: 12,
       }}
     >
@@ -26,10 +29,11 @@ function Radio({
           height: 20,
           borderRadius: 10,
           borderWidth: 2,
-          borderColor: selected ? '#0ea5e9' : '#94a3b8',
-          alignItems: 'center',
-          justifyContent: 'center',
+          borderColor: selected ? palette.accent : palette.sub,
+          alignItems: "center",
+          justifyContent: "center",
           marginRight: 12,
+          backgroundColor: "transparent",
         }}
       >
         {selected ? (
@@ -38,27 +42,78 @@ function Radio({
               width: 10,
               height: 10,
               borderRadius: 5,
-              backgroundColor: '#0ea5e9',
+              backgroundColor: palette.accent,
             }}
           />
         ) : null}
       </View>
-      <Text style={{ fontSize: 16 }}>{label}</Text>
+      <Text style={{ color: palette.text, fontSize: 16 }}>{label}</Text>
     </Pressable>
   );
 }
 
 export default function AppearanceSettingsScreen() {
+  const { colors, dark } = useTheme();
   const mode = useUIStore((s) => s.themeMode);
   const setMode = useUIStore((s) => s.setThemeMode);
 
+  const palette = useMemo(
+    () => ({
+      bg: colors.background,
+      card: colors.card,
+      text: colors.text,
+      sub: dark ? "#96A2AE" : "#475569",
+      border: dark ? "#223042" : "#E2E8F0",
+      accent: colors.primary,
+    }),
+    [colors, dark]
+  );
+
   return (
-    <View style={{ padding: 16 }}>
-      <Text style={{ fontSize: 18, fontWeight: '600', marginBottom: 12 }}>Apparence</Text>
-      <Radio label="Système" selected={mode === 'system'} onPress={() => setMode('system')} />
-      <Radio label="Clair" selected={mode === 'light'} onPress={() => setMode('light')} />
-      <Radio label="Sombre" selected={mode === 'dark'} onPress={() => setMode('dark')} />
-      <Text style={{ marginTop: 16, color: '#64748b' }}>
+    <View style={{ flex: 1, backgroundColor: palette.bg, padding: 16 }}>
+      <Text
+        style={{
+          color: palette.text,
+          fontSize: 18,
+          fontWeight: "700",
+          marginBottom: 12,
+        }}
+      >
+        Apparence
+      </Text>
+
+      <View
+        style={{
+          backgroundColor: palette.bg,
+          borderRadius: 12,
+          borderWidth: 1,
+          borderColor: palette.border,
+          paddingHorizontal: 12,
+        }}
+      >
+        <RadioRow
+          label="Système"
+          selected={mode === "system"}
+          onPress={() => setMode("system")}
+          palette={palette}
+        />
+        <View style={{ height: 1, backgroundColor: palette.border }} />
+        <RadioRow
+          label="Clair"
+          selected={mode === "light"}
+          onPress={() => setMode("light")}
+          palette={palette}
+        />
+        <View style={{ height: 1, backgroundColor: palette.border }} />
+        <RadioRow
+          label="Sombre"
+          selected={mode === "dark"}
+          onPress={() => setMode("dark")}
+          palette={palette}
+        />
+      </View>
+
+      <Text style={{ color: palette.sub, marginTop: 16 }}>
         Le mode “Système” suit automatiquement le thème du téléphone.
       </Text>
     </View>
