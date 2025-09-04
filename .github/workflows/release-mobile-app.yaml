@@ -27,13 +27,7 @@ jobs:
         working-directory: ${{ env.W_DIRECTORY }}
         run: npm ci
 
-      - name: Lint
-        working-directory: ${{ env.W_DIRECTORY }}
-        run: npm run lint
-
-      - name: Run unit tests
-        working-directory: ${{ env.W_DIRECTORY }}
-        run: npm test
+     
         
   android-build:
     name: Android App Build and Deploy

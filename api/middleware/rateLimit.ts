@@ -1,7 +1,7 @@
 import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 import type { Request, Response } from 'express';
 
-const limit = 15 * 60 * 1000000000000;
+const limit = 15 * 60 * 1000000;
 // Générateur de clé : user_id si connecté, sinon IP sécurisée IPv6
 const keyGenerator = (req: Request): string => {
   const userId = (req as any).user?.user_id;
