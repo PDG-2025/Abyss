@@ -6,8 +6,6 @@ class PalierScreen(TemplateScreen):
     def __init__(self):
         super().__init__()
         # Initiate Indicators
-        self.add_field("ind_battery", 260, 0, FT_SMALL)
-        self.modify_field("ind_battery", "%")
         self.add_field("ind_pressure", 430, 0, FT_SMALL)
         self.modify_field("ind_pressure", "BAR")
 

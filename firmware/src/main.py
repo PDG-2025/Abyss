@@ -15,11 +15,13 @@ def main():
 
     try:
         while True:
-            print("dive: ", dm.is_in_dive_mode())
             if dm.is_in_dive_mode():
                 sensors_data = sm.get_data()
                 sensors_data.append(calc_mod(dm.gaz_per))
-                sensors_data.append(ndl_palier_tpalier(dm.gaz_per))
+                d1, d2, d3 = ndl_palier_tpalier(dm.gaz_per)
+                sensors_data.append(d1)
+                sensors_data.append(d2)
+                sensors_data.append(d3)
                 print("sensors data: ", sensors_data)
                 dm.screen.update_values(sensors_data, dm.dive_time())
             else:

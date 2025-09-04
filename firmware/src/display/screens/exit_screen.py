@@ -28,7 +28,7 @@ class ExitScreen(TemplateScreen):
             self.quit = SELECTOR.NON
         self.modifiy_x_y("selector", self.quit.value)
 
-    def update_values(self, sensor_raw, timer, palier_timer):
+    def update_values(self, sensor_raw, timer):
         pass
 
     def update(self, button):
