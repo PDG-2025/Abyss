@@ -306,13 +306,6 @@ export default function MapScreen() {
           }}
           palette={palette}
         />
-        <Fab
-          label="▶︎"
-          onPress={() => {
-            /* centrer sur Suisse/Monde */
-          }}
-          palette={palette}
-        />
       </View>
     </View>
   );

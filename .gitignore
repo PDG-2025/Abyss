@@ -10,8 +10,6 @@ android/.gradle/
 android/build/
 android/local.properties
 android/app/fastlane/
-android
-ios/
 node_modules/
 .bundle/
 
