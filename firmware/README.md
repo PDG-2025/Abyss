@@ -6,21 +6,46 @@
 
 Abyss Firmware est une application de plongée développée pour Raspberry Pi.
 
+## Functionnalités
+
+Une fois lancée, la montre permet, dans 2 modes différents:  
+* La sélection le type de gaz utilisé  
+* La sélection le pourcentage d'oxygène  
+* Le calibrage le compas  
+* L'affichage 
+  * de la profondeur
+  * des variations de profondeurs en m/min
+  * de la température
+  * de la durée de la plongée
+
 ## Structure du projet
 
 ```
-../firmware/
-├── deployment-package/
-│   └── install.sh              # Script d'installation automatique
-├── src/
-│   └── hello_world/
-│       ├── __init__.py
-│       └── main.py             # Application (DEMO)
-├── tests/
-│   └── test_hello.py           # Tests unitaires (DEMO)
-├── pyproject.toml              # Configuration du projet Python
-../.github/workflows/
-    └── release-firmware.yaml   # Pipeline CI/CD
+.
+├── deploy.sh
+├── pyproject.toml
+├── README.md
+├── src
+│   ├── button
+│   │   ├── buttons.py
+│   ├── display
+│   │   ├── display_manager.py
+│   │   └── screens
+│   │       ├── config_screen.py
+│   │       ├── exit_screen.py
+│   │       ├── general_screen.py
+│   │       ├── palier_screen.py
+│   │       └── template_screen.py
+│   ├── logs
+│   │   └── mesures.json
+│   ├── main.py
+│   ├── sensors
+│   │   ├── ms5837.py
+│   │   └── sensors.py
+│   └── utils
+│       └── utils.py
+└── tests
+    └── test_display.py
 ```
 
 ## Installation
@@ -35,7 +60,7 @@ Abyss Firmware est une application de plongée développée pour Raspberry Pi.
 ```bash
 # Cloner le repository
 git clone <repository-url>
-cd abyss-firmware
+cd Abyss/firmware
 
 # Installer en mode développement avec les dépendances de dev
 pip install -e ".[dev]"
@@ -46,23 +71,19 @@ pip install -e ".[dev]"
 ```bash
 # Télécharger et extraire le package depuis le serveur
 tar -xzf Abyss-firmware.tar.gz
-cd deployment-package
 
 # Exécuter le script d'installation
-chmod +x install.sh
-./install.sh
+chmod +x deploy.sh
+sudo ./deploy.sh
 ```
 
 ## Utilisation
 
-### Exécution directe (DEMO)
+### Exécution directe
 
 ```bash
 # Via le module Python
-python -m hello_world.main
-
-# Via le script défini dans pyproject.toml
-hello-world
+sudo python3 src/main.py
 ```
 
 ## Tests
@@ -76,11 +97,6 @@ pytest tests/ -v
 # Lancer les tests avec rapport détaillé
 pytest tests/ -v --tb=short
 ```
-
-### Tests disponibles (DEMO)
-
-- `test_hello()` : Vérifie que la fonction `hello_world()` retourne le bon message
-- `test_bye()` : Vérifie que la fonction `bye()` retourne le bon message
 
 ## Développement
 
@@ -112,10 +128,6 @@ flake8 src/ tests/ --count --max-complexity=10 --max-line-length=88 --statistics
 
 - `linux_armv7l` (Raspberry Pi 32-bit)
 - `linux_aarch64` (Raspberry Pi 64-bit)
-
-## Licence
-
-TODO
 
 ## Support
 

@@ -61,23 +61,10 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ env.V_PYTHON }}
-      
-      - name: Prepare Build and Dependencies
+            
+      - name: Package
         run: |
-          python -m pip install --upgrade pip
-          pip install build wheel
-          pip download -d deployment-package/wheels/ \
-            --platform linux_armv7l \
-            --platform linux_aarch64 \
-            --only-binary=:all: \
-            -r requirements.txt
-      
-      - name: Build and Package
-        run: |
-          python -m build
-          cp dist/*.whl deployment-package/
-          chmod +x deployment-package/install.sh
-          mkdir release && tar -czf release/Abyss-firmware.tar.gz deployment-package/
+          mkdir release && tar -czf release/Abyss-firmware.tar.gz .
       
       - name: Deploy to Server
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
