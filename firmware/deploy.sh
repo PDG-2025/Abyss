@@ -5,7 +5,7 @@ APP=${1:-Abyss}
 SRC=${2:-.}
 
 # Install & copy
-apt-get update -qq && apt-get install -y python3-venv
+apt-get update -qq && apt-get install -y python3-venv libjpeg-dev zlib1g-dev
 mkdir -p /opt/$APP
 cp -r $SRC/* /opt/$APP/
 cd /opt/$APP
