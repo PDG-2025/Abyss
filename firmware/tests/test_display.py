@@ -15,8 +15,8 @@ from utils.utils import BUTTON, CONF_OPT, EXIT_SELECTOR, FT_SMALL
 
 class TestTemplateScreen:
 
-    @patch('PIL.Image.new')
-    @patch('PIL.ImageDraw.Draw')
+    @patch("PIL.Image.new")
+    @patch("PIL.ImageDraw.Draw")
     def test_generate_image(self, mock_draw, mock_image):
         screen = TemplateScreen()
         mock_img = Mock()
@@ -31,7 +31,9 @@ class TestTemplateScreen:
 
         mock_image.assert_called_once_with("RGB", (480, 320), "#d3d3d3")
         mock_draw.assert_called_once_with(mock_img)
-        mock_drawer.text.assert_called_once_with((10, 20), "texte", font=FT_SMALL, fill="black")
+        mock_drawer.text.assert_called_once_with(
+            (10, 20), "texte", font=FT_SMALL, fill="black"
+        )
         assert result == mock_img
 
     def test_update_default(self):
@@ -55,11 +57,12 @@ class TestConfigScreen:
         screen.down_phase()
         assert screen.phase != original_phase
 
+
 class TestGeneralScreen:
     """Tests pour GeneralScreen"""
 
-    @patch('display.screens.general_screen.datetime')
-    @patch('display.screens.general_screen.up_down_from_file')
+    @patch("display.screens.general_screen.datetime")
+    @patch("display.screens.general_screen.up_down_from_file")
     def test_update_values(self, mock_up_down, mock_datetime):
         screen = GeneralScreen()
 
@@ -68,7 +71,16 @@ class TestGeneralScreen:
         mock_up_down.return_value = "1.5"
 
         # Données de capteur factices
-        sensor_raw = [25.5, 0, 15.2, 0, 30, 45, 3, 5]  # temp, _, depth, _, mod, ndl, palier, palier_time
+        sensor_raw = [
+            25.5,
+            0,
+            15.2,
+            0,
+            30,
+            45,
+            3,
+            5,
+        ]  # temp, _, depth, _, mod, ndl, palier, palier_time
         timer = "05:30"
 
         screen.update_values(sensor_raw, timer)
@@ -84,6 +96,7 @@ class TestGeneralScreen:
         screen = GeneralScreen()
         result = screen.update(BUTTON.UP_BUTTON)
         assert result is None
+
 
 class TestExitScreen:
     """Tests pour ExitScreen"""
@@ -131,6 +144,7 @@ class TestExitScreen:
         screen.quit = EXIT_SELECTOR.OUI
         result = screen.update(BUTTON.ENTER_BUTTON)
         assert result is True
+
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
