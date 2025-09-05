@@ -12,6 +12,7 @@ class ExitScreen(TemplateScreen):
         self.quit = EXIT_SELECTOR.NON
 
         # Initiate Indicators
+        self.add_field("stop_dive", 20, 100, FT_BIG)
         self.modify_field("stop_dive", "Arrêter la plongée ? ")
         self.add_field("non", 100, 200, FT_BIG)
         self.modify_field("non", "NON")
